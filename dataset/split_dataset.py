@@ -65,7 +65,7 @@ for file in files:
                 all_labels.extend(img_labels)
 
                 # load the images as a numpy array
-                img = np.array([np.array(Image.open(os.path.join(img_path, fn)).convert('L')) for fn in img_filenames])
+                img = np.array([np.array(Image.open(os.path.join(img_path, fn)).convert('RGB')) for fn in img_filenames])
 
                 # generate example labels
                 lbl = np.array(img_labels)
