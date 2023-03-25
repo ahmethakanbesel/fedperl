@@ -12,17 +12,17 @@ train_transform = transforms.Compose(
      transforms.RandomRotation(20),
      transforms.ColorJitter(brightness=32. / 255., saturation=0.5),
      transforms.ToTensor(),
-     transforms.Normalize((0.0, 0.0, 0.0), (1.0, 1.0, 1.0))
+     transforms.Normalize((0.0, ), (1.0,))
      ])
 
 trainU_transform = transforms.Compose(
     [transforms.ToPILImage(),
      RandAugment(),
      transforms.ToTensor(),
-     transforms.Normalize((0.0, 0.0, 0.0), (1.0, 1.0, 1.0))
+     transforms.Normalize((0.0, ), (1.0, ))
      ])
 
-val_transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.0, 0.0, 0.0), (1.0, 1.0, 1.0))])
+val_transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.0,), (1.0, ))])
 
 
 class MyDataset(Dataset):
@@ -54,15 +54,17 @@ class SkinData:
         self.clients = clients_path  # '/home/tariq/code/UsedData/SKIN_IMG_Numpy/clients/'
 
     def load_isic20(self):
-        img = np.load(self.data_path + 'ISIC20_IMG_224.npy')
-        lbl = np.load(self.data_path + 'ISIC20_LBL_224.npy')
+        img = np.load(self.data_path + 'dataset_img.npy')
+        lbl = np.load(self.data_path + 'dataset_lbl.npy')
         test_ds = MyDataset(img, lbl, val_transform)
         return test_ds
 
     def load_server(self):
-        img = np.load(self.data_path + 'ISIC19_IMG_224.npy')
-        lbl = np.load(self.data_path + 'ISIC19_LBL_224.npy')
-        idx = np.load(self.clients + 'server.npy')
+        img = np.load(self.data_path + 'dataset_img.npy')
+        lbl = np.load(self.data_path + 'dataset_lbl.npy')
+        print(lbl)
+        # idx = np.load(self.clients + 'server.npy')
+        idx = np.array([0, 1, 3])
         img_tr_l = img[idx]
         lbl_tr_l = lbl[idx]
 
@@ -129,32 +131,52 @@ class SkinData:
         val_ds = MyDataset(img_v, lbl_v, val_transform)
         return train_ds, val_ds, list(weights.values())
 
+    # TODO: Load dataset properly
     def load_clients_test_val(self, client_id):
-        if client_id in (0, 1, 2, 3, 4):
-            img = np.load(self.data_path + 'ISIC19_IMG_224.npy')
-            lbl = np.load(self.data_path + 'ISIC19_LBL_224.npy')
-        elif client_id in (6, 7, 5):
-            img = np.load(self.data_path + 'HAM_IMG_224.npy')
-            lbl = np.load(self.data_path + 'HAM_LBL_224.npy')
-        elif client_id == 8:
-            img = np.load(self.data_path + 'PAD_IMG_224.npy')
-            lbl = np.load(self.data_path + 'PAD_LBL_224.npy')
-        elif client_id == 9:
-            img = np.load(self.data_path + 'DERM_IMG_224.npy')
-            lbl = np.load(self.data_path + 'DERM_LBL_224.npy')
+        img_t = np.load(self.data_path + f'/clients/client-{str(client_id)}-L_img.npy')
+        lbl_t = np.load(self.data_path + f'/clients/client-{str(client_id)}-L_lbl.npy')
 
-        idx_t = np.load(self.clients + 'client' + str(client_id) + 'T.npy')
-        idx_v = np.load(self.clients + 'client' + str(client_id) + 'V.npy')
-
-        img_t = img[idx_t]
-        lbl_t = lbl[idx_t]
-
-        img_v = img[idx_v]
-        lbl_v = lbl[idx_v]
+        img_v = np.load(self.data_path + f'/clients/client-{str(client_id)}-V_img.npy')
+        lbl_v = np.load(self.data_path + f'/clients/client-{str(client_id)}-V_lbl.npy')
 
         test_ds = MyDataset(img_t, lbl_t, val_transform)
         val_ds = MyDataset(img_v, lbl_v, val_transform)
         return test_ds, val_ds
+
+    # TODO: Load dataset properly
+    def load_clients_ssl(self, client_id):
+        img_tr_l = np.load(self.data_path + f'/clients/client-{str(client_id)}-L_img.npy')
+        lbl_tr_l = np.load(self.data_path + f'/clients/client-{str(client_id)}-L_lbl.npy')
+
+        img_tr_u = np.load(self.data_path + f'/clients/client-{str(client_id)}-U_img.npy')
+        lbl_tr_u = np.load(self.data_path + f'/clients/client-{str(client_id)}-U_lbl.npy')
+
+        img_tr_v = np.load(self.data_path + f'/clients/client-{str(client_id)}-V_img.npy')
+        lbl_tr_v = np.load(self.data_path + f'/clients/client-{str(client_id)}-V_lbl.npy')
+
+        print(len(lbl_tr_v), len(lbl_tr_l), len(lbl_tr_u))
+
+        missing_class_weight = 100
+        id, counts = np.unique(lbl_tr_l, return_counts=True)
+        med_freq = np.median(counts)
+        lbl_weights = {}
+        cK = 0
+        for k in id:
+            lbl_weights[k] = med_freq / counts[cK]
+            cK += 1
+
+        # max_class_id = np.max(lbl_weights.keys())+1
+        weights = {}
+        for k in range(8):
+            if k in lbl_weights.keys():
+                weights[k] = lbl_weights[k]
+            else:
+                weights[k] = missing_class_weight
+
+        train_ds = MyDataset(img_tr_l, lbl_tr_l, train_transform)
+        train_uds = MyDataset(img_tr_u, lbl_tr_u, train_transform, trainU_transform)
+        val_ds = MyDataset(img_tr_v, lbl_tr_v, val_transform)
+        return train_ds, train_uds, val_ds, list(weights.values())
 
     def load_clients_upper(self, client_id):
         if client_id in (0, 1, 2, 3, 4):
@@ -200,52 +222,3 @@ class SkinData:
         train_ds = MyDataset(img_tr_l, lbl_tr_l, train_transform)
         val_ds = MyDataset(img_v, lbl_v, val_transform)
         return train_ds, val_ds, list(weights.values())
-
-    def load_clients_ssl(self, client_id):
-        if client_id in (0, 1, 2, 3, 4):
-            img = np.load(self.data_path + 'ISIC19_IMG_224.npy')
-            lbl = np.load(self.data_path + 'ISIC19_LBL_224.npy')
-        elif client_id in (6, 7, 5):
-            img = np.load(self.data_path + 'HAM_IMG_224.npy')
-            lbl = np.load(self.data_path + 'HAM_LBL_224.npy')
-        elif client_id == 8:
-            img = np.load(self.data_path + 'PAD_IMG_224.npy')
-            lbl = np.load(self.data_path + 'PAD_LBL_224.npy')
-        elif client_id == 9:
-            img = np.load(self.data_path + 'DERM_IMG_224.npy')
-            lbl = np.load(self.data_path + 'DERM_LBL_224.npy')
-
-        idx_l = np.load(self.clients + 'client' + str(client_id) + 'L.npy')
-        idx_v = np.load(self.clients + 'client' + str(client_id) + 'V.npy')
-        idx_u = np.load(self.clients + 'client' + str(client_id) + 'U.npy')
-
-        img_tr_l = img[idx_l]
-        lbl_tr_l = lbl[idx_l]
-
-        img_tr_u = img[idx_u]
-        lbl_tr_u = lbl[idx_u]
-
-        img_tr_v = img[idx_v]
-        lbl_tr_v = lbl[idx_v]
-
-        missing_class_weight = 100
-        id, counts = np.unique(lbl_tr_l, return_counts=True)
-        med_freq = np.median(counts)
-        lbl_weights = {}
-        cK = 0
-        for k in id:
-            lbl_weights[k] = med_freq / counts[cK]
-            cK += 1
-
-        # max_class_id = np.max(lbl_weights.keys())+1
-        weights = {}
-        for k in range(8):
-            if k in lbl_weights.keys():
-                weights[k] = lbl_weights[k]
-            else:
-                weights[k] = missing_class_weight
-
-        train_ds = MyDataset(img_tr_l, lbl_tr_l, train_transform)
-        train_uds = MyDataset(img_tr_u, lbl_tr_u, train_transform, trainU_transform)
-        val_ds = MyDataset(img_tr_v, lbl_tr_v, val_transform)
-        return train_ds, train_uds, val_ds, list(weights.values())
