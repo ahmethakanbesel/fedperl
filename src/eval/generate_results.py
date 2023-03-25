@@ -136,9 +136,9 @@ def generate_summary():
     for name in models:
         test_ds, val_ds = get_dataset(name)
 
-        valid_loader = torch.utils.data.DataLoader(val_ds, batch_size=batchSize, shuffle='False', num_workers=4,
+        valid_loader = torch.utils.data.DataLoader(val_ds, batch_size=batchSize, shuffle='False', num_workers=0,
                                                    pin_memory=True)
-        test_loader = torch.utils.data.DataLoader(test_ds, batch_size=batchSize, shuffle='False', num_workers=4,
+        test_loader = torch.utils.data.DataLoader(test_ds, batch_size=batchSize, shuffle='False', num_workers=0,
                                                   pin_memory=True)
 
         ws = wb.get_sheet_by_name('Val')
