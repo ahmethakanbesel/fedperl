@@ -12,9 +12,9 @@ device = torch.device('cuda:0')
 
 parser = argparse.ArgumentParser(description='FedPerl')
 
-parser.add_argument('--data_path', default='./dataset/', type=str, metavar='PATH',
+parser.add_argument('--data_path', default='./../dataset/', type=str, metavar='PATH',
                     help='path to the dataset(validation or testing)')
-parser.add_argument('--clients_path', default='./dataset/clients/', type=str, metavar='PATH',
+parser.add_argument('--clients_path', default='./../dataset/clients/', type=str, metavar='PATH',
                     help='path to clients')
 parser.add_argument('--check_folder', default='checkpoint', type=str, metavar='PATH',
                     help='path to the check points model')
