@@ -456,16 +456,16 @@ class Server:
         self.client_clss_weights = []
 
         server_val, self.server_clss_weights = self.data.load_server()
-        self.server_loader = DataLoader(server_val, batch_size=self.batch_size, shuffle='False', num_workers=4,
+        self.server_loader = DataLoader(server_val, batch_size=self.batch_size, shuffle='False', num_workers=0,
                                         pin_memory=True)
 
         for clnt in range(self.num_clients):
             train_ds, train_dsu, val_ds, weights = self.data.load_clients_ssl(clnt)
-            train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle='True', num_workers=4,
+            train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle='True', num_workers=0,
                                       pin_memory=True)
-            train_loader_u = DataLoader(train_dsu, batch_size=self.batch_size, shuffle='True', num_workers=4,
+            train_loader_u = DataLoader(train_dsu, batch_size=self.batch_size, shuffle='True', num_workers=0,
                                        pin_memory=True)
-            val_loader = DataLoader(val_ds, batch_size=self.batch_size, shuffle='False', num_workers=4, pin_memory=True)
+            val_loader = DataLoader(val_ds, batch_size=self.batch_size, shuffle='False', num_workers=0, pin_memory=True)
             self.train_loaders.append(train_loader)
             self.train_loaders_u.append(train_loader_u)
             self.val_loaders.append(val_loader)
