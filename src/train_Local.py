@@ -300,25 +300,25 @@ class Trainer:
         """
         if self.settting == 'SSL':
             train_ds, train_dsu, val_ds, self.clss_weights = self.data.load_clients_ssl(self.client_id)
-            self.train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle='True', num_workers=4,
+            self.train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle='True', num_workers=0,
                                            pin_memory=True)
-            self.train_loader_u = DataLoader(train_dsu, batch_size=self.batch_size, shuffle='True', num_workers=4,
+            self.train_loader_u = DataLoader(train_dsu, batch_size=self.batch_size, shuffle='True', num_workers=0,
                                              pin_memory=True)
-            self.val_loader = DataLoader(val_ds, batch_size=self.batch_size, shuffle='False', num_workers=4,
+            self.val_loader = DataLoader(val_ds, batch_size=self.batch_size, shuffle='False', num_workers=0,
                                          pin_memory=True)
             self.steps = len(self.train_loader_u)
         elif self.settting == 'Lower':
             train_ds, val_ds, self.clss_weights = self.data.load_clients_lower(self.client_id)
-            self.train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle='True', num_workers=4,
+            self.train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle='True', num_workers=0,
                                            pin_memory=True)
-            self.val_loader = DataLoader(val_ds, batch_size=self.batch_size, shuffle='False', num_workers=4,
+            self.val_loader = DataLoader(val_ds, batch_size=self.batch_size, shuffle='False', num_workers=0,
                                          pin_memory=True)
             self.steps = len(self.train_loader)
         elif self.settting == 'Upper':
             train_ds, val_ds, self.clss_weights = self.data.load_clients_upper(self.client_id)
-            self.train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle='True', num_workers=4,
+            self.train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle='True', num_workers=0,
                                            pin_memory=True)
-            self.val_loader = DataLoader(val_ds, batch_size=self.batch_size, shuffle='False', num_workers=4,
+            self.val_loader = DataLoader(val_ds, batch_size=self.batch_size, shuffle='False', num_workers=0,
                                          pin_memory=True)
             self.steps = len(self.train_loader)
 
