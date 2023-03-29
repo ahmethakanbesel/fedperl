@@ -18,7 +18,7 @@ parser.add_argument('--clients_path', default='./../dataset/clients/', type=str,
                     help='path to clients')
 parser.add_argument('--check_folder', default='checkpoint', type=str, metavar='PATH',
                     help='path to the check points model')
-parser.add_argument('--clients_state', default='states', type=str, metavar='PATH',
+parser.add_argument('--clients_state', default='./../states/', type=str, metavar='PATH',
                     help='path to save the clients state temporarly')
 parser.add_argument('--models_folder', default='models', type=str, metavar='PATH',
                     help='path to save the trained models')
