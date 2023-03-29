@@ -413,7 +413,12 @@ class Server:
         criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(self.server_clss_weights))
         for batch_idx, sample_batched in enumerate(self.server_loader):
             X = sample_batched[0].type(torch.cuda.FloatTensor)
-            y = sample_batched[1].type(torch.cuda.LongTensor)
+            #y = sample_batched[1].type(torch.cuda.LongTensor)
+            label_map = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
+                         'subarachnoid': 3, 'subdural': 4, 'healthy': 5}
+            img_labels = [label_map[label] for label in sample_batched[1]]
+
+            y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
             N = X.size(0)
             output = self.peer(X)
             prediction = output.cpu().max(1, keepdim=True)[1]
