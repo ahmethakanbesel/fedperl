@@ -7,7 +7,6 @@ from utils.randaug import RandAugment
 # Define transforms for dataset
 train_transform = transforms.Compose(
     [transforms.ToPILImage(), transforms.Grayscale(num_output_channels=3),
-
      transforms.RandomHorizontalFlip(),
      transforms.RandomVerticalFlip(),
      transforms.RandomRotation(20),
@@ -18,7 +17,6 @@ train_transform = transforms.Compose(
 
 trainU_transform = transforms.Compose(
     [transforms.ToPILImage(), transforms.Grayscale(num_output_channels=3),
-
      RandAugment(),
      transforms.ToTensor(),
      transforms.Normalize((0.0, 0.0, 0.0), (1.0, 1.0, 1.0))
