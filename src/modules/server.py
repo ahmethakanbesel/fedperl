@@ -382,7 +382,8 @@ class Server:
         self.global_model.eval()
         val_loss = AverageMeter()
         val_acc = AverageMeter()
-        criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(self.server_clss_weights))
+        criterion = nn.CrossEntropyLoss()
+        # criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(self.server_clss_weights))
         for batch_idx, sample_batched in enumerate(self.server_loader):
             X = sample_batched[0].type(torch.cuda.FloatTensor)
             label_map = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
