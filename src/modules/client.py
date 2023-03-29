@@ -246,10 +246,16 @@ class Client:
         self.local_model.eval()
         val_loss = AverageMeter()
         val_acc = AverageMeter()
-        criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(clss_weights))
+        criterion = nn.CrossEntropyLoss()
+        # criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(clss_weights))
         for batch_idx, sample_batched in enumerate(val_loader):
             x = sample_batched[0].type(torch.cuda.FloatTensor)
-            y = sample_batched[1].type(torch.cuda.LongTensor)
+            label_map = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
+                         'subarachnoid': 3, 'subdural': 4, 'healthy': 5}
+            img_labels = [label_map[label] for label in sample_batched[1]]
+
+            y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
+            # y = sample_batched[1].type(torch.cuda.LongTensor)
             n = x.size(0)
             output = self.local_model(x)
             prediction = output.cpu().max(1, keepdim=True)[1]
