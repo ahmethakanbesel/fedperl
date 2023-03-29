@@ -10,6 +10,7 @@ from torch.utils.data import DataLoader
 import copy
 import os
 import time
+
 device = torch.device('cuda:0')
 
 
@@ -115,7 +116,6 @@ class Server:
         self.include_C8 = self.args.include_C8
         self.fed_prox = self.args.fed_prox
         self.name = self.method + '_c8' + str(self.include_C8) + '_avg' + str(self.is_PA) + '_prox' + str(self.fed_prox)
-
 
     def build_models(self):
         """
@@ -385,7 +385,12 @@ class Server:
         criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(self.server_clss_weights))
         for batch_idx, sample_batched in enumerate(self.server_loader):
             X = sample_batched[0].type(torch.cuda.FloatTensor)
-            y = sample_batched[1].type(torch.cuda.LongTensor)
+            label_map = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
+                         'subarachnoid': 3, 'subdural': 4, 'healthy': 5}
+            img_labels = [label_map[label] for label in sample_batched[1]]
+
+            y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
+            # y = sample_batched[1].type(torch.cuda.LongTensor)
             N = X.size(0)
             output = self.global_model(X)
             prediction = output.cpu().max(1, keepdim=True)[1]
@@ -411,10 +416,10 @@ class Server:
         val_loss = AverageMeter()
         val_acc = AverageMeter()
         criterion = nn.CrossEntropyLoss()
-        #criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(self.server_clss_weights))
+        # criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(self.server_clss_weights))
         for batch_idx, sample_batched in enumerate(self.server_loader):
             X = sample_batched[0].type(torch.cuda.FloatTensor)
-            #y = sample_batched[1].type(torch.cuda.LongTensor)
+            # y = sample_batched[1].type(torch.cuda.LongTensor)
             label_map = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
                          'subarachnoid': 3, 'subdural': 4, 'healthy': 5}
             img_labels = [label_map[label] for label in sample_batched[1]]
@@ -470,7 +475,7 @@ class Server:
             train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle='True', num_workers=0,
                                       pin_memory=True)
             train_loader_u = DataLoader(train_dsu, batch_size=self.batch_size, shuffle='True', num_workers=0,
-                                       pin_memory=True)
+                                        pin_memory=True)
             val_loader = DataLoader(val_ds, batch_size=self.batch_size, shuffle='False', num_workers=0, pin_memory=True)
             self.train_loaders.append(train_loader)
             self.train_loaders_u.append(train_loader_u)
