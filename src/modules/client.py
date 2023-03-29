@@ -157,7 +157,8 @@ class Client:
             self.peers_found = False
 
         optimizer = optim.Adam(self.local_model.parameters(), lr=curr_lr)
-        criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(self.clss_weights))
+        criterion = nn.CrossEntropyLoss()
+        #criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(self.clss_weights))
         train_loss = AverageMeter()
         train_acc = AverageMeter()
         trainloader_l_iter = enumerate(self.train_loader)
@@ -199,6 +200,7 @@ class Client:
             with torch.set_grad_enabled(True):
                 output = self.local_model(x)
                 loss = criterion(output, y)
+                #loss = loss_fn(output, y)
                 loss_u, conf, ce_lss, mse_lss = self.un_supervised_loss(x_u, x_u_aug, peers_wghts)
                 loss += loss_u
 
