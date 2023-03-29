@@ -6,23 +6,27 @@ from utils.randaug import RandAugment
 
 # Define transforms for dataset
 train_transform = transforms.Compose(
-    [transforms.ToPILImage(),
+    [transforms.ToPILImage(), transforms.Grayscale(num_output_channels=3),
+
      transforms.RandomHorizontalFlip(),
      transforms.RandomVerticalFlip(),
      transforms.RandomRotation(20),
      transforms.ColorJitter(brightness=32. / 255., saturation=0.5),
      transforms.ToTensor(),
-     transforms.Normalize((0.0, ), (1.0,))
+     transforms.Normalize((0.0, 0.0, 0.0), (1.0, 1.0, 1.0))
      ])
 
 trainU_transform = transforms.Compose(
-    [transforms.ToPILImage(),
+    [transforms.ToPILImage(), transforms.Grayscale(num_output_channels=3),
+
      RandAugment(),
      transforms.ToTensor(),
-     transforms.Normalize((0.0, ), (1.0, ))
+     transforms.Normalize((0.0, 0.0, 0.0), (1.0, 1.0, 1.0))
      ])
 
-val_transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.0,), (1.0, ))])
+val_transform = transforms.Compose([transforms.ToPILImage(), transforms.Grayscale(num_output_channels=3),
+                                    transforms.ToTensor(),
+                                    transforms.Normalize((0.0, 0.0, 0.0), (1.0, 1.0, 1.0))])
 
 
 class MyDataset(Dataset):
