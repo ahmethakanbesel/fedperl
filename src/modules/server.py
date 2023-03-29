@@ -410,7 +410,8 @@ class Server:
         self.peer.eval()
         val_loss = AverageMeter()
         val_acc = AverageMeter()
-        criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(self.server_clss_weights))
+        criterion = nn.CrossEntropyLoss()
+        #criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(self.server_clss_weights))
         for batch_idx, sample_batched in enumerate(self.server_loader):
             X = sample_batched[0].type(torch.cuda.FloatTensor)
             #y = sample_batched[1].type(torch.cuda.LongTensor)
