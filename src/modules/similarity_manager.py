@@ -54,7 +54,8 @@ class SimilarityManager:
         rw = 0   
         for cid, p_fet in self.plain_features.items():
             clients_id.append(cid)
-            plain_fet[rw] = p_fet
+            for i in range(len(plain_fet[rw])):
+                plain_fet[rw][i] = p_fet[i]
             rw +=1
         if normalize == 1:
             nor_fet = self.features_nomalization(plain_fet)
