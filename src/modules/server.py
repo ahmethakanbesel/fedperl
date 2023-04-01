@@ -241,7 +241,7 @@ class Server:
                         else:
                             weights.append(copy.deepcopy(w))
                 else:
-                    pids = np.random.choice(self.trained_clients, self.num_peers, replace=False)
+                    pids = np.random.choice(self.trained_clients, min(self.num_peers, len(self.trained_clients)), replace=False)
                     for pid in pids:
                         if pid == client_id or pid == cd2:
                             continue
