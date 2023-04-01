@@ -116,7 +116,12 @@ class Client:
                     peer_pred = self.peer(x)
                 probs.append(torch.softmax(peer_pred.detach(), dim=-1))
 
-            sum_prob = np.sum([prob, np.sum(probs)], axis=0) / (len(peers_wghts) + 1)
+            # sum_prob = np.sum([prob, np.sum(probs)], axis=0) / (len(peers_wghts) + 1)
+            sum_prob = prob
+            for p in probs:
+                sum_prob += p
+            sum_prob /= (len(peers_wghts) + 1)
+
             sum_prob, mx_ind = torch.max(sum_prob, axis=1)
             sum_prob = (sum_prob >= self.con) * sum_prob
             # sum_prob = (sum_prob >=0.6)*sum_prob
@@ -158,7 +163,7 @@ class Client:
 
         optimizer = optim.Adam(self.local_model.parameters(), lr=curr_lr)
         criterion = nn.CrossEntropyLoss()
-        #criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(self.clss_weights))
+        # criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(self.clss_weights))
         train_loss = AverageMeter()
         train_acc = AverageMeter()
         trainloader_l_iter = enumerate(self.train_loader)
@@ -200,7 +205,7 @@ class Client:
             with torch.set_grad_enabled(True):
                 output = self.local_model(x)
                 loss = criterion(output, y)
-                #loss = loss_fn(output, y)
+                # loss = loss_fn(output, y)
                 loss_u, conf, ce_lss, mse_lss = self.un_supervised_loss(x_u, x_u_aug, peers_wghts)
                 loss += loss_u
 
@@ -264,4 +269,3 @@ class Client:
             val_acc.update(prediction.cpu().eq(y.cpu().view_as(prediction.cpu())).sum().item() / n)
 
         return val_loss.avg, val_acc.avg
-
