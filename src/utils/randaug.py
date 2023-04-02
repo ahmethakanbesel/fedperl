@@ -119,8 +119,8 @@ if __name__ == '__main__':
     # print('how to  call')
 
     # this  is for  a  single  fun  you  want to test
-    img_augment = Rand_Augment()
-    img_origal = Image.open(r'0bfdedaa60b54078ab0fc3bc6582aa90.jpg')
+    img_augment = RandAugment()
+    img_origal = Image.open('../../dataset/images/ID_003165361.png')
     for i in range(0, 10):
         img_final = img_augment.test_single_operation(img_origal, 'invert', M=i)
         plt.subplot(5, 2, i + 1)
