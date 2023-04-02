@@ -1,6 +1,4 @@
-from PIL import Image
 import matplotlib.pyplot as plt
-import numpy as np
 from PIL import Image, ImageEnhance, ImageOps
 import numpy as np
 import random
@@ -36,7 +34,7 @@ class RandAugment():
             "sharpness": np.linspace(0.0, 0.9, 10),
             "brightness": np.linspace(0.0, 0.3, 10),
             "autocontrast": [0] * 10,
-            "equalize": [0] * 10,           
+            "equalize": [0] * 10,
             "invert": [0] * 10
         }
         self.func = {
@@ -80,8 +78,7 @@ class RandAugment():
         return [(op, Magnitude) for (op, Magnitude) in zip(sampled_ops, M)]
 
     def __call__(self, image, N=None, M=None):
-
-        self.N = len(self.transforms)//2 if N is None else N
+        self.N = len(self.transforms) // 2 if N is None else N
         self.M = 10 if M is None else M
 
         operations = self.rand_augment()
@@ -126,4 +123,3 @@ if __name__ == '__main__':
         plt.subplot(5, 2, i + 1)
         plt.imshow(img_final)
     plt.show()
-    print('how  to test')
