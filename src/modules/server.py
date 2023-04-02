@@ -12,7 +12,8 @@ import os
 import time
 
 device = torch.device('cuda:0')
-
+LABEL_MAP = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
+                         'subarachnoid': 3, 'subdural': 4}
 
 class Server:
     def __init__(self, args):
@@ -386,9 +387,7 @@ class Server:
         # criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(self.server_clss_weights))
         for batch_idx, sample_batched in enumerate(self.server_loader):
             X = sample_batched[0].type(torch.cuda.FloatTensor)
-            label_map = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
-                         'subarachnoid': 3, 'subdural': 4, 'healthy': 5}
-            img_labels = [label_map[label] for label in sample_batched[1]]
+            img_labels = [LABEL_MAP[label] for label in sample_batched[1]]
 
             y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
             # y = sample_batched[1].type(torch.cuda.LongTensor)
@@ -421,9 +420,7 @@ class Server:
         for batch_idx, sample_batched in enumerate(self.server_loader):
             X = sample_batched[0].type(torch.cuda.FloatTensor)
             # y = sample_batched[1].type(torch.cuda.LongTensor)
-            label_map = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
-                         'subarachnoid': 3, 'subdural': 4, 'healthy': 5}
-            img_labels = [label_map[label] for label in sample_batched[1]]
+            img_labels = [LABEL_MAP[label] for label in sample_batched[1]]
 
             y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
             N = X.size(0)

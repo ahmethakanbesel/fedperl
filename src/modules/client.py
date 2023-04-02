@@ -6,7 +6,8 @@ from efficientnet_pytorch import EfficientNet
 from utils.AverageMeter import *
 
 device = torch.device('cuda:0')
-
+LABEL_MAP = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
+                         'subarachnoid': 3, 'subdural': 4}
 
 class Client:
     def __init__(self, num_classes, con, lambda_a, lambda_i):
@@ -192,9 +193,7 @@ class Client:
 
             x = sample_batched[0].type(torch.cuda.FloatTensor)
 
-            label_map = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
-                         'subarachnoid': 3, 'subdural': 4, 'healthy': 5}
-            img_labels = [label_map[label] for label in sample_batched[1]]
+            img_labels = [LABEL_MAP[label] for label in sample_batched[1]]
 
             y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
             # y = sample_batched[1].type(torch.cuda.LongTensor)
@@ -255,9 +254,7 @@ class Client:
         # criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(clss_weights))
         for batch_idx, sample_batched in enumerate(val_loader):
             x = sample_batched[0].type(torch.cuda.FloatTensor)
-            label_map = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
-                         'subarachnoid': 3, 'subdural': 4, 'healthy': 5}
-            img_labels = [label_map[label] for label in sample_batched[1]]
+            img_labels = [LABEL_MAP[label] for label in sample_batched[1]]
 
             y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
             # y = sample_batched[1].type(torch.cuda.LongTensor)
