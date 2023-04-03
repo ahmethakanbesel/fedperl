@@ -80,7 +80,7 @@ for file in files:
             row_count += 1
 
 # load the images as a numpy array
-img_all = np.array([np.array(Image.open(os.path.join(img_path, fn)).convert('L')) for fn in all_images])
+img_all = np.array([np.array(Image.open(os.path.join(img_path, fn)).convert('RGB')) for fn in all_images])
 
 # generate example labels
 lbl_all = np.array(all_labels)
