@@ -26,6 +26,7 @@ parser.add_argument('--models_folder', default='./../models/', type=str, metavar
                     help='path to save the trained models')
 parser.add_argument('--model_name', default='FedPerl', type=str)
 parser.add_argument('--num_rounds', type=int, default=2)
+parser.add_argument('--num_workers', type=int, default=0)
 parser.add_argument('--steps', type=int, default=10, help='number of iteration')
 parser.add_argument('--curr_lr', type=int, default=0.00005)
 parser.add_argument('--batch_size', type=int, default=5)

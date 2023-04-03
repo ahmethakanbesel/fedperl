@@ -13,7 +13,8 @@ import time
 
 device = torch.device('cuda:0')
 LABEL_MAP = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
-                         'subarachnoid': 3, 'subdural': 4}
+             'subarachnoid': 3, 'subdural': 4}
+
 
 class Server:
     def __init__(self, args):
@@ -242,7 +243,8 @@ class Server:
                         else:
                             weights.append(copy.deepcopy(w))
                 else:
-                    pids = np.random.choice(self.trained_clients, min(self.num_peers, len(self.trained_clients)), replace=False)
+                    pids = np.random.choice(self.trained_clients, min(self.num_peers, len(self.trained_clients)),
+                                            replace=False)
                     for pid in pids:
                         if pid == client_id or pid == cd2:
                             continue
@@ -465,16 +467,20 @@ class Server:
         self.client_clss_weights = []
 
         server_val, self.server_clss_weights = self.data.load_server()
-        self.server_loader = DataLoader(server_val, batch_size=self.batch_size, shuffle='False', num_workers=0,
+        self.server_loader = DataLoader(server_val, batch_size=self.batch_size, shuffle='False',
+                                        num_workers=self.args.num_workers,
                                         pin_memory=True)
 
         for clnt in range(self.num_clients):
             train_ds, train_dsu, val_ds, weights = self.data.load_clients_ssl(clnt)
-            train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle='True', num_workers=0,
+            train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle='True',
+                                      num_workers=self.args.num_workers,
                                       pin_memory=True)
-            train_loader_u = DataLoader(train_dsu, batch_size=self.batch_size, shuffle='True', num_workers=0,
+            train_loader_u = DataLoader(train_dsu, batch_size=self.batch_size, shuffle='True',
+                                        num_workers=self.args.num_workers,
                                         pin_memory=True)
-            val_loader = DataLoader(val_ds, batch_size=self.batch_size, shuffle='False', num_workers=0, pin_memory=True)
+            val_loader = DataLoader(val_ds, batch_size=self.batch_size, shuffle='False',
+                                    num_workers=self.args.num_workers, pin_memory=True)
             self.train_loaders.append(train_loader)
             self.train_loaders_u.append(train_loader_u)
             self.val_loaders.append(val_loader)
