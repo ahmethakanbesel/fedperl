@@ -2,16 +2,18 @@ import csv
 import os
 from zipfile import ZipFile
 
-label_files = ['clean_train_df.csv', 'testing.csv', 'training.csv']
-limit = 500
+# ['dataset.csv', ROW_LIMIT]
+label_files = [
+    ['not_used.csv', 1000], ['testing.csv', None], ['training.csv', None]
+]
 files_to_keep = []
 
 for label_file in label_files:
-    with open(label_file, newline='') as csvfile:
+    with open(label_file[0], newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         chosen_files = 0
         for row in reader:
-            if chosen_files == limit:
+            if label_file[1] is not None and chosen_files == label_file[1]:
                 break
             # print(row['ImageID'])
             files_to_keep.append(row['ImageID'])
