@@ -36,7 +36,7 @@ parser.add_argument('--img_channel', type=int, default=1)
 parser.add_argument('--img_width', type=int, default=224)
 parser.add_argument('--img_height', type=int, default=224)
 parser.add_argument('--alpha', type=int, default=1)
-parser.add_argument('--con', type=int, default=0.6, help='confidence treashold')
+parser.add_argument('--con', type=int, default=0.6, help='confidence threshold')
 parser.add_argument('--lambda_a', type=int, default=0.5, help='unlabeled coefficient')
 parser.add_argument('--lambda_i', type=int, default=0.01, help='consistency coefficient')
 parser.add_argument('--num_clients', type=int, default=10, help='num of clients')
@@ -44,9 +44,9 @@ parser.add_argument('--connected_clients', type=int, default=10, help='connected
 parser.add_argument('--num_peers', type=int, default=2, help='number of peers used in peer learning')
 parser.add_argument('--method', default='Perl', type=str,
                     help='current options Perl, Random, FedMatch, FixMatch')
-parser.add_argument('--is_normalized', default='True', help='normalize the features on the similairty matrix')
+parser.add_argument('--is_normalized', default='True', help='normalize the features on the similarity matrix')
 parser.add_argument('--include_acc', default='True',
-                    help='include clients accuarcy in the similarity calculation for FedPerl')
+                    help='include clients accuracy in the similarity calculation for FedPerl')
 parser.add_argument('--save_check', default='True', help='save check points')
 parser.add_argument('--calculate_val', default='True',
                     help='calculate validation accuracy for clients after each round')
