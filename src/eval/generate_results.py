@@ -1,5 +1,4 @@
 import glob
-from glob import glob
 
 import numpy as np
 import openpyxl
@@ -8,9 +7,10 @@ import torch.nn as nn
 # pytorch libraries
 from efficientnet_pytorch import EfficientNet
 # sklearn libraries
+from openpyxl import Workbook
 from sklearn.metrics import precision_recall_fscore_support
 
-from data.data_FL import SkinData
+from data_FL import SkinData
 
 # Compute precision, recall, F-measure and support for each class.
 # The precision is intuitively the ability of the classifier not to label as positive a sample that is negative.
@@ -20,13 +20,16 @@ from data.data_FL import SkinData
 # beta == 1.0 means recall and precision are equally important.
 # The support is the number of occurrences of each class in y_true.
 
-lesions_names = ['MEL', 'NV', 'BCC', 'AK', 'BKL', 'DF', 'VASC', 'SCC']
-lesions_indexs = [0, 1, 2, 3, 4, 5, 6, 7]
+LABEL_MAP = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
+             'subarachnoid': 3, 'subdural': 4}
+lesions_names = ['epidural', 'intraparenchymal', 'intraventricular', 'subarachnoid', 'subdural']
+lesions_indexs = [0, 1, 2, 3, 4]
 
-num_classes = 8
+num_classes = 5
 batchSize = 16
-data_path = '.......'
+data_path = '../../dataset/'
 name = 'FedPerl'
+RESULTS_FILE = 'All_Scores.xlsx'
 
 
 def predict(model, loader):
@@ -36,7 +39,9 @@ def predict(model, loader):
     with torch.no_grad():
         for batch_idx, sample_batched in enumerate(loader):
             X = sample_batched[0].type(torch.cuda.FloatTensor)
-            y = sample_batched[1].type(torch.cuda.LongTensor)
+            img_labels = [LABEL_MAP[label] for label in sample_batched[1]]
+            y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
+            # y = sample_batched[1].type(torch.cuda.LongTensor)
             y_gt.append(y.cpu())
             y_pred = model(X)
             y_pred = np.argmax(y_pred.cpu(), axis=1)
@@ -103,12 +108,33 @@ def calculate_scores(y, predictions):
         scores
     """
     acc = np.mean(np.equal(predictions, y))
-    prf3 = precision_recall_fscore_support(y, predictions, average='weighted')
+    prf3 = precision_recall_fscore_support(y, predictions, average='weighted', zero_division=1)
 
     return acc, prf3[0], prf3[1], prf3[2]
 
 
-def generate_summary():
+def prepare_excel(filename: str):
+    # Create a new workbook object
+    workbook = Workbook()
+    # Add a sheet to the workbook
+    sheet = workbook.active
+    sheet.title = 'Val'
+    workbook.create_sheet('Test')
+
+    workbook[workbook.sheetnames[0]]['B1'] = 'Accuracy'
+    workbook[workbook.sheetnames[0]]['C1'] = 'Precision'
+    workbook[workbook.sheetnames[0]]['D1'] = 'Recall'
+    workbook[workbook.sheetnames[0]]['E1'] = 'Support'
+
+    workbook[workbook.sheetnames[1]]['B1'] = 'Accuracy'
+    workbook[workbook.sheetnames[1]]['C1'] = 'Precision'
+    workbook[workbook.sheetnames[1]]['D1'] = 'Recall'
+    workbook[workbook.sheetnames[1]]['E1'] = 'Support'
+    # Save the workbook to a file
+    workbook.save(filename)
+
+
+def generate_summary(model_path):
     """
     generate model summary and save it an excel sheet
 
@@ -130,10 +156,13 @@ def generate_summary():
     model = model.cuda()
     model = model.to(device)
 
-    wb = openpyxl.load_workbook('All_Scores.xlsx')
+    prepare_excel(RESULTS_FILE)
+    wb = openpyxl.load_workbook(RESULTS_FILE)
     i = 1
     shift = 1
     for name in models:
+        if "client" not in name:
+            continue
         test_ds, val_ds = get_dataset(name)
 
         valid_loader = torch.utils.data.DataLoader(val_ds, batch_size=batchSize, shuffle='False', num_workers=0,
@@ -141,7 +170,7 @@ def generate_summary():
         test_loader = torch.utils.data.DataLoader(test_ds, batch_size=batchSize, shuffle='False', num_workers=0,
                                                   pin_memory=True)
 
-        ws = wb.get_sheet_by_name('Val')
+        ws = wb[wb.sheetnames[0]]
 
         model.load_state_dict(torch.load(name))
         # for i in range(5):
@@ -149,7 +178,6 @@ def generate_summary():
 
         y, predictions = predict(model, valid_loader)
         Acc, wPr, wR, wF = calculate_scores(y, predictions)
-
         cl = 'A' + str(i + shift)
         ws[cl] = name
         cl = 'B' + str(i + shift)
@@ -162,7 +190,7 @@ def generate_summary():
         ws[cl] = wR
         cl = 'F' + str(i + shift)
 
-        ws = wb.get_sheet_by_name('Test')
+        ws = wb[wb.sheetnames[1]]
         y, predictions = predict(model, test_loader)
         Acc, wPr, wR, wF = calculate_scores(y, predictions)
 
@@ -179,7 +207,7 @@ def generate_summary():
         cl = 'F' + str(i + shift)
         i += 1
 
-    wb.save('All_Scores.xlsx')
+    wb.save(RESULTS_FILE)
 
 
 def get_dataset(name):
@@ -212,4 +240,4 @@ def get_dataset(name):
 
 
 if __name__ == '__main__':
-    generate_summary()
+    generate_summary('../../models/')
