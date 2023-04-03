@@ -24,11 +24,11 @@ for file in files:
                 break
             if row_count == file[1]:
                 row_count = 0
-                if file == 'not_used.csv':
+                if file[0] == 'not_used.csv':
                     output_file = f"client-{client_id}-V"
-                elif file == 'training.csv':
+                elif file[0] == 'training.csv':
                     output_file = f"client-{client_id}-L"
-                elif file == 'testing.csv':
+                elif file[0] == 'testing.csv':
                     output_file = f"client-{client_id}-U"
 
                 # try:
