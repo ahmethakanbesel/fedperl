@@ -1,4 +1,6 @@
 import argparse
+
+import numpy as np
 import torch
 from torch.optim import *
 from modules.server import *
@@ -27,8 +29,8 @@ parser.add_argument('--num_rounds', type=int, default=2)
 parser.add_argument('--steps', type=int, default=10, help='number of iteration')
 parser.add_argument('--curr_lr', type=int, default=0.00005)
 parser.add_argument('--batch_size', type=int, default=5)
-parser.add_argument('--num_classes', type=int, default=6)
-parser.add_argument('--n_classes', type=int, default=6)
+parser.add_argument('--num_classes', type=int, default=5)
+parser.add_argument('--n_classes', type=int, default=5)
 parser.add_argument('--weight_decay', type=int, default=0.002)
 parser.add_argument('--img_channel', type=int, default=1)
 parser.add_argument('--img_width', type=int, default=224)
@@ -38,7 +40,7 @@ parser.add_argument('--con', type=int, default=0.6, help='confidence treashold')
 parser.add_argument('--lambda_a', type=int, default=0.5, help='unlabeled coefficient')
 parser.add_argument('--lambda_i', type=int, default=0.01, help='consistency coefficient')
 parser.add_argument('--num_clients', type=int, default=10, help='num of clients')
-parser.add_argument('--connected_clients', type=int, default=2, help='connected clients')
+parser.add_argument('--connected_clients', type=int, default=10, help='connected clients')
 parser.add_argument('--num_peers', type=int, default=2, help='number of peers used in peer learning')
 parser.add_argument('--method', default='Perl', type=str,
                     help='current options Perl, Random, FedMatch, FixMatch')
