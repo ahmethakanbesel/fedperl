@@ -5,16 +5,16 @@ from PIL import Image
 
 import numpy as np
 
-files = ['clean_train_df.csv', 'testing.csv', 'training.csv']
+# [FILE, ROW_LIMIT]
+files = [['not_used.csv', 100], ['testing.csv', 500], ['training.csv', 2000]]
 all_images = []
 all_labels = []
-limit = 50
 client_limit = 10
 image_ids = []
 img_path = './images/'
 
 for file in files:
-    with open(file, newline='') as csvfile:
+    with open(file[0], newline='') as csvfile:
         reader = csv.DictReader(csvfile)
         client_id = 0
         row_count = 0
@@ -22,13 +22,12 @@ for file in files:
         for row in reader:
             if client_id == client_limit:
                 break
-            if row_count == limit:
+            if row_count == file[1]:
                 row_count = 0
-
-                if file == 'clean_train_df.csv':
-                    output_file = f"client-{client_id}-L"
-                elif file == 'training.csv':
+                if file == 'not_used.csv':
                     output_file = f"client-{client_id}-V"
+                elif file == 'training.csv':
+                    output_file = f"client-{client_id}-L"
                 elif file == 'testing.csv':
                     output_file = f"client-{client_id}-U"
 
@@ -65,7 +64,8 @@ for file in files:
                 all_labels.extend(img_labels)
 
                 # load the images as a numpy array
-                img = np.array([np.array(Image.open(os.path.join(img_path, fn)).convert('RGB')) for fn in img_filenames])
+                img = np.array(
+                    [np.array(Image.open(os.path.join(img_path, fn)).convert('RGB')) for fn in img_filenames])
 
                 # generate example labels
                 lbl = np.array(img_labels)
