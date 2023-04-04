@@ -135,8 +135,8 @@ class SkinData:
 
     # TODO: Load dataset properly
     def load_clients_test_val(self, client_id):
-        img_t = np.load(self.data_path + f'/clients/client-{str(client_id)}-L_img.npy')
-        lbl_t = np.load(self.data_path + f'/clients/client-{str(client_id)}-L_lbl.npy')
+        img_t = np.load(self.data_path + f'/clients/client-{str(client_id)}-U_img.npy')
+        lbl_t = np.load(self.data_path + f'/clients/client-{str(client_id)}-U_lbl.npy')
 
         img_v = np.load(self.data_path + f'/clients/client-{str(client_id)}-V_img.npy')
         lbl_v = np.load(self.data_path + f'/clients/client-{str(client_id)}-V_lbl.npy')
