@@ -2,7 +2,7 @@ from torch import optim
 import numpy as np
 import torch
 import torch.nn as nn
-from efficientnet_pytorch import EfficientNet
+from src.modules import models
 from utils.AverageMeter import *
 
 device = torch.device('cuda:0')
@@ -47,7 +47,7 @@ class Client:
           Returns:
               None
         """
-        model = EfficientNet.from_pretrained('efficientnet-b0', num_classes=self.num_classes)
+        model = models.get_model(self.num_classes)
         num_ftrs = model._fc.in_features
         model._fc = nn.Linear(num_ftrs, self.num_classes)
         model = nn.DataParallel(model)

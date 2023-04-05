@@ -11,6 +11,8 @@ import copy
 import os
 import time
 
+from src.modules import models
+
 device = torch.device('cuda:0')
 LABEL_MAP = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
              'subarachnoid': 3, 'subdural': 4}
@@ -29,7 +31,7 @@ class Server:
         """
 
         self.args = args
-        self.global_model = EfficientNet.from_pretrained('efficientnet-b0', num_classes=self.args.n_classes)
+        self.global_model = models.get_model(self.args.n_classes)
         num_ftrs = self.global_model._fc.in_features
         self.global_model._fc = nn.Linear(num_ftrs, self.args.n_classes)
         self.global_model = nn.DataParallel(self.global_model)
@@ -129,7 +131,7 @@ class Server:
         Returns:
             None
         """
-        model = EfficientNet.from_pretrained('efficientnet-b0', num_classes=self.num_classes)
+        model = models.get_model(self.num_classes)
         num_ftrs = model._fc.in_features
         model._fc = nn.Linear(num_ftrs, self.num_classes)
         model = nn.DataParallel(model)

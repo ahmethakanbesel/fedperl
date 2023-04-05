@@ -11,6 +11,7 @@ from openpyxl import Workbook
 from sklearn.metrics import precision_recall_fscore_support
 
 from data_FL import SkinData
+from src.modules import models
 
 # Compute precision, recall, F-measure and support for each class.
 # The precision is intuitively the ability of the classifier not to label as positive a sample that is negative.
@@ -144,11 +145,11 @@ def generate_summary(model_path):
     Returns:
         None
     """
-    models = []
+    models_list = []
     for model in glob.glob(model_path + '*.pt'):
-        models.append(model)
+        models_list.append(model)
 
-    model = EfficientNet.from_pretrained('efficientnet-b0', num_classes=num_classes)
+    model = models.get_model(num_classes)
     num_ftrs = model._fc.in_features
     model._fc = nn.Linear(num_ftrs, num_classes)
     device = torch.device('cuda:0')
@@ -160,7 +161,7 @@ def generate_summary(model_path):
     wb = openpyxl.load_workbook(RESULTS_FILE)
     i = 1
     shift = 1
-    for name in models:
+    for name in models_list:
         if "client" not in name:
             continue
         test_ds, val_ds = get_dataset(name)

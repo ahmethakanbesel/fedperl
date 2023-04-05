@@ -3,7 +3,7 @@ import glob
 import numpy as np
 import openpyxl
 import torch
-from efficientnet_pytorch import EfficientNet
+from src.modules import models
 from openpyxl import Workbook
 from sklearn.metrics import precision_recall_fscore_support
 from torch import nn
@@ -87,9 +87,9 @@ def generate_summary(model_path):
     Returns:
         None
     """
-    models = [model_path]
+    models_list = [model_path]
 
-    model = EfficientNet.from_pretrained('efficientnet-b0', num_classes=num_classes)
+    model = models.get_model(num_classes)
     num_ftrs = model._fc.in_features
     model._fc = nn.Linear(num_ftrs, num_classes)
     device = torch.device('cuda:0')
@@ -101,7 +101,7 @@ def generate_summary(model_path):
     wb = openpyxl.load_workbook(RESULTS_FILE)
     i = 1
     shift = 1
-    for name in models:
+    for name in models_list:
         test_ds, val_ds = get_dataset()
 
         valid_loader = torch.utils.data.DataLoader(val_ds, batch_size=batchSize, shuffle='False', num_workers=0,
@@ -150,8 +150,8 @@ def generate_summary(model_path):
 
 
 def get_dataset():
-    img_t = np.load(data_path + f'/dataset_img.npy')
-    lbl_t = np.load(data_path + f'/dataset_lbl.npy')
+    img_t = np.load(data_path + f'/testing_img.npy')
+    lbl_t = np.load(data_path + f'/testing_lbl.npy')
 
     img_v = np.load(data_path + f'/clients/client-1-V_img.npy')
     lbl_v = np.load(data_path + f'/clients/client-1-V_lbl.npy')
@@ -163,4 +163,4 @@ def get_dataset():
 
 
 if __name__ == '__main__':
-    generate_summary('../../models/GlobPerl_c8True_avgTrue_proxFalse.pt')
+    generate_summary('../../models/GlobPerl_c8True_avgTrue_proxFalse_500r.pt')

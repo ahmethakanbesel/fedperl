@@ -10,7 +10,7 @@ from efficientnet_pytorch import EfficientNet
 from torch import optim
 from torch.optim import *
 from torch.utils.data import DataLoader
-
+from src.modules import models
 from data.data_FL import SkinData
 from utils.AverageMeter import *
 
@@ -107,7 +107,7 @@ class Trainer:
         Returns:
         None
         """
-        self.model = EfficientNet.from_pretrained('efficientnet-b0', num_classes=self.num_classes)
+        self.model = models.get_model(self.num_classes)
         num_ftrs = self.model._fc.in_features
         self.model._fc = nn.Linear(num_ftrs, self.num_classes)
         self.model = nn.DataParallel(self.model)
