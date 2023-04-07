@@ -23,7 +23,7 @@ for file in files:
         for r in reader:
             if rows_processed == file[1]:
                 rows_processed = 0
-            images.append(Image.open(os.path.join(img_path, r['ImageID'])).convert('RGB'))
+            images.append(np.array(Image.open(os.path.join(img_path, r['ImageID'])).convert('RGB')))
             if r['epidural'] == "1":
                 labels.append('epidural')
             elif r['intraparenchymal'] == "1":
