@@ -153,7 +153,9 @@ class SkinData:
         start_idx = start_idx + 100
         if client_id < 2:  # 2 labeled clients
             labeled = [i for i in range(start_idx, start_idx + 2001)]
+            unlabeled = [start_idx]
         else:
+            labeled = [start_idx]
             unlabeled = [i for i in range(start_idx, start_idx + 2001)]
         return labeled, unlabeled, validation
 
