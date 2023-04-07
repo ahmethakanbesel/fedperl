@@ -8,7 +8,7 @@ from openpyxl import Workbook
 from sklearn.metrics import precision_recall_fscore_support
 from torch import nn
 
-from data_FL import MyDataset, val_transform
+from src.data.data_FL import MyDataset, val_transform
 
 LABEL_MAP = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
              'subarachnoid': 3, 'subdural': 4}
