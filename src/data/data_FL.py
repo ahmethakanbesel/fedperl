@@ -2,7 +2,7 @@ import numpy as np
 from torch.utils.data import Dataset
 from torchvision import transforms
 
-from utils.randaug import RandAugment
+from src.utils.randaug import RandAugment
 
 # Define transforms for dataset
 train_transform = transforms.Compose(
