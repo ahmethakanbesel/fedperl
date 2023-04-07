@@ -150,14 +150,23 @@ def generate_summary(model_path):
 
 
 def get_dataset():
-    img_t = np.load(data_path + f'/testing_img.npy')
-    lbl_t = np.load(data_path + f'/testing_lbl.npy')
+    images = np.load(data_path + f'/dataset_img.npy')
+    labels = np.load(data_path + f'/dataset_lbl.npy')
 
-    img_v = np.load(data_path + f'/clients/client-1-V_img.npy')
-    lbl_v = np.load(data_path + f'/clients/client-1-V_lbl.npy')
+    start_idx = 21000
+    test = [i for i in range(start_idx, start_idx + 5001)]
 
-    test_ds = MyDataset(img_t, lbl_t, val_transform)
-    val_ds = MyDataset(img_v, lbl_v, val_transform)
+    img_test = images[test]
+    lbl_test = labels[test]
+
+    start_idx = 0
+    validation = [i for i in range(start_idx, start_idx + 101)]
+
+    img_validation = images[validation]
+    lbl_validation = labels[validation]
+
+    test_ds = MyDataset(img_test, lbl_test, val_transform)
+    val_ds = MyDataset(img_validation, lbl_validation, val_transform)
 
     return test_ds, val_ds
 
