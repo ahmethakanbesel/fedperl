@@ -65,7 +65,7 @@ class SkinData:
         img = np.load(self.data_path + 'dataset_img.npy')
         lbl = np.load(self.data_path + 'dataset_lbl.npy')
         # idx = np.load(self.clients + 'server.npy')
-        idx = np.array([])
+        idx = np.array([0])
         img_tr_l = img[idx]
         lbl_tr_l = lbl[idx]
 
