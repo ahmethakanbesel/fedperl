@@ -153,7 +153,7 @@ class SkinData:
         start_idx = start_idx + 100
         labeled = [i for i in range(start_idx, start_idx + 1601)]
         start_idx = start_idx + 1600
-        unlabeled = [i for i in range(start_idx, start_idx + 501)]
+        unlabeled = [i for i in range(start_idx, start_idx + 401)]
         return labeled, unlabeled, validation
 
     def get_client_image_ids(self, client_id):
