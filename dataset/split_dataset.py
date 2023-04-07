@@ -6,12 +6,17 @@ from PIL import Image
 import numpy as np
 
 # [FILE, ROW_LIMIT]
-files = [['not_used.csv', 100], ['testing.csv', 500], ['training.csv', 2000]]
+files = [
+    ['validation.csv', 100],
+    ['testing.csv', 500],
+    ['training.csv', 2000]
+]
 all_images = []
 all_labels = []
 client_limit = 10
 image_ids = []
 img_path = './images/'
+save_client_files = True
 
 for file in files:
     with open(file[0], newline='') as csvfile:
@@ -63,15 +68,16 @@ for file in files:
                 all_images.extend(img_filenames)
                 all_labels.extend(img_labels)
 
-                # load the images as a numpy array
-                img = np.array(
-                    [np.array(Image.open(os.path.join(img_path, fn)).convert('RGB')) for fn in img_filenames])
+                if save_client_files:
+                    # load the images as a numpy array
+                    img = np.array(
+                        [np.array(Image.open(os.path.join(img_path, fn)).convert('RGB')) for fn in img_filenames])
 
-                # generate example labels
-                lbl = np.array(img_labels)
+                    # generate example labels
+                    lbl = np.array(img_labels)
 
-                np.save('./clients/' + output_file + '_img.npy', img)
-                np.save('./clients/' + output_file + '_lbl.npy', lbl)
+                    np.save('./clients/' + output_file + '_img.npy', img)
+                    np.save('./clients/' + output_file + '_lbl.npy', lbl)
 
                 chosen_rows = []
                 client_id += 1
