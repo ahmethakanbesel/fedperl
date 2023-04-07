@@ -144,7 +144,19 @@ class SkinData:
         val_ds = MyDataset(img_v, lbl_v, val_transform)
         return test_ds, val_ds
 
-    def get_client_image_ids_equal(self, client_id):
+    def get_client_image_ids_20L_80U(self, client_id):
+        labeled, unlabeled, validation = [], [], []
+        # 100 val, 2000 training = 2100
+        start_idx = 2100 * client_id
+        # Pick first 100 as validation
+        validation = [i for i in range(start_idx, start_idx + 101)]
+        start_idx = start_idx + 100
+        unlabeled = [i for i in range(start_idx, start_idx + 1601)]
+        start_idx = start_idx + 1600
+        labeled = [i for i in range(start_idx, start_idx + 401)]
+        return labeled, unlabeled, validation
+
+    def get_client_image_ids_80L_20U(self, client_id):
         labeled, unlabeled, validation = [], [], []
         # 100 val, 2000 training = 2100
         start_idx = 2100 * client_id
@@ -176,7 +188,7 @@ class SkinData:
         images = np.load(self.data_path + f'/dataset_img.npy')
         labels = np.load(self.data_path + f'/dataset_lbl.npy')
 
-        idx_l, idx_u, idx_v = self.get_client_image_ids_equal(client_id)
+        idx_l, idx_u, idx_v = self.get_client_image_ids_20L_80U(client_id)
 
         img_tr_l = images[idx_l]
         lbl_tr_l = labels[idx_l]
