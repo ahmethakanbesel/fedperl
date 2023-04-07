@@ -64,9 +64,8 @@ class SkinData:
     def load_server(self):
         img = np.load(self.data_path + 'dataset_img.npy')
         lbl = np.load(self.data_path + 'dataset_lbl.npy')
-        print(lbl)
         # idx = np.load(self.clients + 'server.npy')
-        idx = np.array([0, 1, 3])
+        idx = np.array([])
         img_tr_l = img[idx]
         lbl_tr_l = lbl[idx]
 
@@ -145,8 +144,58 @@ class SkinData:
         val_ds = MyDataset(img_v, lbl_v, val_transform)
         return test_ds, val_ds
 
+    def get_client_image_ids(self, client_id):
+        labeled, unlabeled, validation = [], [], []
+        # 100 val, 2000 training = 2100
+        start_idx = 2100 * client_id
+        # Pick first 100 as validation
+        validation = [i for i in range(start_idx, start_idx + 101)]
+        start_idx = start_idx + 100
+        if client_id < 2:  # 2 labeled clients
+            labeled = [i for i in range(start_idx, start_idx + 2001)]
+        else:
+            unlabeled = [i for i in range(start_idx, start_idx + 2001)]
+        return labeled, unlabeled, validation
+
     # TODO: Load dataset properly
     def load_clients_ssl(self, client_id):
+        images = np.load(self.data_path + f'/dataset_img.npy')
+        labels = np.load(self.data_path + f'/dataset_lbl.npy')
+
+        idx_l, idx_u, idx_v = self.get_client_image_ids(client_id)
+
+        img_tr_l = images[idx_l]
+        lbl_tr_l = labels[idx_l]
+
+        img_tr_u = images[idx_u]
+        lbl_tr_u = labels[idx_u]
+
+        img_tr_v = images[idx_v]
+        lbl_tr_v = labels[idx_v]
+
+        missing_class_weight = 100
+        id, counts = np.unique(lbl_tr_l, return_counts=True)
+        med_freq = np.median(counts)
+        lbl_weights = {}
+        cK = 0
+        for k in id:
+            lbl_weights[k] = med_freq / counts[cK]
+            cK += 1
+
+        # max_class_id = np.max(lbl_weights.keys())+1
+        weights = {}
+        for k in range(8):
+            if k in lbl_weights.keys():
+                weights[k] = lbl_weights[k]
+            else:
+                weights[k] = missing_class_weight
+
+        train_ds = MyDataset(img_tr_l, lbl_tr_l, train_transform)
+        train_uds = MyDataset(img_tr_u, lbl_tr_u, train_transform, trainU_transform)
+        val_ds = MyDataset(img_tr_v, lbl_tr_v, val_transform)
+        return train_ds, train_uds, val_ds, list(weights.values())
+
+    def load_clients_ssl_client(self, client_id):
         img_tr_l = np.load(self.data_path + f'/clients/client-{str(client_id)}-L_img.npy')
         lbl_tr_l = np.load(self.data_path + f'/clients/client-{str(client_id)}-L_lbl.npy')
 
