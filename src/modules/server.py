@@ -475,19 +475,22 @@ class Server:
 
         for clnt in range(self.num_clients):
             train_ds, train_dsu, val_ds, weights = self.data.load_clients_ssl(clnt)
-            train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle='True',
-                                      num_workers=self.args.num_workers,
-                                      pin_memory=True)
-            train_loader_u = DataLoader(train_dsu, batch_size=self.batch_size, shuffle='True',
-                                        num_workers=self.args.num_workers,
-                                        pin_memory=True)
+            if len(train_ds) > 0:
+                train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle='True',
+                                          num_workers=self.args.num_workers,
+                                          pin_memory=True)
+                self.train_loaders.append(train_loader)
+            if len(train_dsu) > 0:
+                train_loader_u = DataLoader(train_dsu, batch_size=self.batch_size, shuffle='True',
+                                            num_workers=self.args.num_workers,
+                                            pin_memory=True)
+                self.train_loaders_u.append(train_loader_u)
+
             val_loader = DataLoader(val_ds, batch_size=self.batch_size, shuffle='False',
                                     num_workers=self.args.num_workers, pin_memory=True)
-            self.train_loaders.append(train_loader)
-            self.train_loaders_u.append(train_loader_u)
             self.val_loaders.append(val_loader)
             self.client_clss_weights.append(weights)
-            if self.steps > len(train_loader_u):
+            if len(train_dsu) > 0 and self.steps > len(train_loader_u):
                 self.steps = len(train_loader_u)
 
     def append_client(self, client_id):
