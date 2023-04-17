@@ -28,11 +28,12 @@ class Database:
     def get_connection(self):
         return self.conn
 
-    def insert_result(self, model: str, accuracy: float, f1: float, precision: float, recall: float, dataset: str):
-        query = 'INSERT INTO results (model, accuracy, f1, precision, recall, dataset) VALUES (?, ?, ?, ?, ?, ?)'
+    def insert_result(self, model: str, accuracy: float, f1: float, precision: float, recall: float, dataset: str,
+                      architecture: str):
+        query = 'INSERT INTO results (model, accuracy, f1, precision, recall, dataset, architecture) VALUES (?, ?, ?, ?, ?, ?, ?)'
         try:
             # Execute the query, passing in the values
-            cursor = self.conn.execute(query, (model, accuracy, f1, precision, recall, dataset))
+            cursor = self.conn.execute(query, (model, accuracy, f1, precision, recall, dataset, architecture))
             # Save the changes to the database
             self.conn.commit()
             # Retrieve the id of the inserted row

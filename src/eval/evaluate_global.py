@@ -9,6 +9,7 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 from torch import nn
 
 from src.data.data_FL import MyDataset, val_transform
+from src.eval.database import Database
 
 LABEL_MAP = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
              'subarachnoid': 3, 'subdural': 4}
@@ -20,6 +21,8 @@ batchSize = 16
 data_path = '../../dataset/'
 name = 'FedPerl'
 RESULTS_FILE = 'All_Scores_Global.xlsx'
+DB_FILE = 'results.db'
+db = Database(DB_FILE)
 
 
 def predict(model, loader):
@@ -108,6 +111,7 @@ def generate_summary(model_path):
     models_list = [model_path]
 
     model = models.get_model(num_classes)
+    architecture = model.__class__.__name__
     device = torch.device('cuda:0')
     model = nn.DataParallel(model)
     model = model.cuda()
@@ -125,42 +129,27 @@ def generate_summary(model_path):
         test_loader = torch.utils.data.DataLoader(test_ds, batch_size=batchSize, shuffle='False', num_workers=0,
                                                   pin_memory=True)
 
-        ws = wb[wb.sheetnames[0]]
-
         model.load_state_dict(torch.load(name))
-        # for i in range(5):
         model.eval()
 
-        y, predictions = predict(model, valid_loader)
-        scores = calculate_scores(y, predictions)
-        cl = 'A' + str(i + shift)
-        ws[cl] = name
-        cl = 'B' + str(i + shift)
-        ws[cl] = scores['accuracy']
-        cl = 'C' + str(i + shift)
-        ws[cl] = scores['f1']
-        cl = 'D' + str(i + shift)
-        ws[cl] = scores['precision']
-        cl = 'E' + str(i + shift)
-        ws[cl] = scores['recall']
-        cl = 'F' + str(i + shift)
-
-        ws = wb[wb.sheetnames[1]]
-        y, predictions = predict(model, test_loader)
-        scores = calculate_scores(y, predictions)
-
-        cl = 'A' + str(i + shift)
-        ws[cl] = name
-        cl = 'B' + str(i + shift)
-        ws[cl] = scores['accuracy']
-        cl = 'C' + str(i + shift)
-        ws[cl] = scores['f1']
-        cl = 'D' + str(i + shift)
-        ws[cl] = scores['precision']
-        cl = 'E' + str(i + shift)
-        ws[cl] = scores['recall']
-        cl = 'F' + str(i + shift)
-        i += 1
+        worksheets = [[wb[wb.sheetnames[0]], 'validation'], [wb[wb.sheetnames[1]], 'test']]
+        for worksheet in worksheets:
+            ws = worksheet[0]
+            y, predictions = predict(model, valid_loader if worksheet[1] == 'validation' else test_loader)
+            scores = calculate_scores(y, predictions)
+            db.insert_result(name, scores['accuracy'], scores['f1'], scores['precision'], scores['recall'],
+                             worksheet[1], architecture)
+            cl = 'A' + str(i + shift)
+            ws[cl] = name
+            cl = 'B' + str(i + shift)
+            ws[cl] = scores['accuracy']
+            cl = 'C' + str(i + shift)
+            ws[cl] = scores['f1']
+            cl = 'D' + str(i + shift)
+            ws[cl] = scores['precision']
+            cl = 'E' + str(i + shift)
+            ws[cl] = scores['recall']
+            cl = 'F' + str(i + shift)
 
     wb.save(RESULTS_FILE)
 
