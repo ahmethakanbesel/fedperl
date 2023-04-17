@@ -12,5 +12,5 @@ def efficientnet(num_classes: int):
 
 
 def densenet(num_classes: int):
-    model = torchvision.models.densenet121(pretrained=True, num_classes=num_classes)
+    model = torchvision.models.densenet121(weights=None, num_classes=num_classes)
     return model
