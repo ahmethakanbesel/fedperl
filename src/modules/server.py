@@ -32,8 +32,6 @@ class Server:
 
         self.args = args
         self.global_model = models.get_model(self.args.n_classes)
-        num_ftrs = self.global_model._fc.in_features
-        self.global_model._fc = nn.Linear(num_ftrs, self.args.n_classes)
         self.global_model = nn.DataParallel(self.global_model)
         self.global_model = self.global_model.cuda()
         self.global_model = self.global_model.to(device)
@@ -132,8 +130,6 @@ class Server:
             None
         """
         model = models.get_model(self.num_classes)
-        num_ftrs = model._fc.in_features
-        model._fc = nn.Linear(num_ftrs, self.num_classes)
         model = nn.DataParallel(model)
         model = model.cuda()
         model = model.to(device)

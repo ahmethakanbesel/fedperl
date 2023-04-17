@@ -48,8 +48,6 @@ class Client:
               None
         """
         model = models.get_model(self.num_classes)
-        num_ftrs = model._fc.in_features
-        model._fc = nn.Linear(num_ftrs, self.num_classes)
         model = nn.DataParallel(model)
         model = model.cuda()
         model = model.to(device)

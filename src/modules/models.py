@@ -1,5 +1,4 @@
 import torchvision
-from efficientnet_pytorch import EfficientNet
 
 
 def get_model(num_classes: int):
@@ -7,7 +6,7 @@ def get_model(num_classes: int):
 
 
 def efficientnet(num_classes: int):
-    model = EfficientNet.from_pretrained('efficientnet-b0', num_classes=num_classes)
+    model = torchvision.models.efficientnet_b0(weights=None, num_classes=num_classes)
     return model
 
 

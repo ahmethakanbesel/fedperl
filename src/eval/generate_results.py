@@ -150,8 +150,6 @@ def generate_summary(model_path):
         models_list.append(model)
 
     model = models.get_model(num_classes)
-    num_ftrs = model._fc.in_features
-    model._fc = nn.Linear(num_ftrs, num_classes)
     device = torch.device('cuda:0')
     model = nn.DataParallel(model)
     model = model.cuda()
