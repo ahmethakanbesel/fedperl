@@ -621,7 +621,7 @@ class Server:
                     vlss_clnt, vacc_clnt = self.client.validate(self.global_model.state_dict(), self.val_loaders[cid],
                                                                 self.client_clss_weights[cid])
                     clnts_acc_log[cid, curr_round] = vacc_clnt
-                    print('rnd:{}, clinet{}: vlss:{}, vacc:{}'.format(curr_round, cid, round(vlss_clnt, 4),
+                    print('rnd:{}, client{}: vlss:{}, vacc:{}'.format(curr_round, cid, round(vlss_clnt, 4),
                                                                       round(vacc_clnt, 4)))
                     if vacc_clnt >= clnts_acc[cid]:
                         clnts_acc[cid] = vacc_clnt
