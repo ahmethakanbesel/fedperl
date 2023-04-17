@@ -5,7 +5,7 @@ import openpyxl
 import torch
 from src.modules import models
 from openpyxl import Workbook
-from sklearn.metrics import precision_recall_fscore_support
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from torch import nn
 
 from src.data.data_FL import MyDataset, val_transform
@@ -41,19 +41,37 @@ def predict(model, loader):
 
 def calculate_scores(y, predictions):
     """
-    calculate scores using skitlearn
+    Calculate scores using scikit-learn
 
     Parameters:
         y: ground truths
         predictions: predictions
 
     Returns:
-        scores
+        scores: dictionary containing accuracy, F1-score, precision, and recall
     """
-    acc = np.mean(np.equal(predictions, y))
-    prf3 = precision_recall_fscore_support(y, predictions, average='weighted', zero_division=1)
 
-    return acc, prf3[0], prf3[1], prf3[2]
+    # Calculate accuracy
+    accuracy = accuracy_score(y, predictions)
+
+    # Calculate F1-score
+    f1 = f1_score(y, predictions, average='weighted')
+
+    # Calculate precision
+    precision = precision_score(y, predictions, average='weighted')
+
+    # Calculate recall
+    recall = recall_score(y, predictions, average='weighted')
+
+    # Create dictionary to store the scores
+    scores = {
+        'accuracy': accuracy,
+        'f1': f1,
+        'precision': precision,
+        'recall': recall
+    }
+
+    return scores
 
 
 def prepare_excel(filename: str):
@@ -65,14 +83,14 @@ def prepare_excel(filename: str):
     workbook.create_sheet('Test')
 
     workbook[workbook.sheetnames[0]]['B1'] = 'Accuracy'
-    workbook[workbook.sheetnames[0]]['C1'] = 'Precision'
-    workbook[workbook.sheetnames[0]]['D1'] = 'Recall'
-    workbook[workbook.sheetnames[0]]['E1'] = 'Support'
+    workbook[workbook.sheetnames[0]]['C1'] = 'F1'
+    workbook[workbook.sheetnames[0]]['D1'] = 'Precision'
+    workbook[workbook.sheetnames[0]]['E1'] = 'Recall'
 
     workbook[workbook.sheetnames[1]]['B1'] = 'Accuracy'
-    workbook[workbook.sheetnames[1]]['C1'] = 'Precision'
-    workbook[workbook.sheetnames[1]]['D1'] = 'Recall'
-    workbook[workbook.sheetnames[1]]['E1'] = 'Support'
+    workbook[workbook.sheetnames[1]]['C1'] = 'F1'
+    workbook[workbook.sheetnames[1]]['D1'] = 'Precision'
+    workbook[workbook.sheetnames[1]]['E1'] = 'Recall'
     # Save the workbook to a file
     workbook.save(filename)
 
@@ -114,33 +132,33 @@ def generate_summary(model_path):
         model.eval()
 
         y, predictions = predict(model, valid_loader)
-        Acc, wPr, wR, wF = calculate_scores(y, predictions)
+        scores = calculate_scores(y, predictions)
         cl = 'A' + str(i + shift)
         ws[cl] = name
         cl = 'B' + str(i + shift)
-        ws[cl] = Acc
+        ws[cl] = scores['accuracy']
         cl = 'C' + str(i + shift)
-        ws[cl] = wF
+        ws[cl] = scores['f1']
         cl = 'D' + str(i + shift)
-        ws[cl] = wPr
+        ws[cl] = scores['precision']
         cl = 'E' + str(i + shift)
-        ws[cl] = wR
+        ws[cl] = scores['recall']
         cl = 'F' + str(i + shift)
 
         ws = wb[wb.sheetnames[1]]
         y, predictions = predict(model, test_loader)
-        Acc, wPr, wR, wF = calculate_scores(y, predictions)
+        scores = calculate_scores(y, predictions)
 
         cl = 'A' + str(i + shift)
         ws[cl] = name
         cl = 'B' + str(i + shift)
-        ws[cl] = Acc
+        ws[cl] = scores['accuracy']
         cl = 'C' + str(i + shift)
-        ws[cl] = wF
+        ws[cl] = scores['f1']
         cl = 'D' + str(i + shift)
-        ws[cl] = wPr
+        ws[cl] = scores['precision']
         cl = 'E' + str(i + shift)
-        ws[cl] = wR
+        ws[cl] = scores['recall']
         cl = 'F' + str(i + shift)
         i += 1
 
@@ -170,4 +188,4 @@ def get_dataset():
 
 
 if __name__ == '__main__':
-    generate_summary('../../models/GlobPerl_c8True_avgTrue_proxFalse_500r.pt')
+    generate_summary('../../models/GlobPerl_c8True_avgTrue_proxFalse.pt')
