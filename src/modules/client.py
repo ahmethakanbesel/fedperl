@@ -3,7 +3,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from src.modules import models
-from utils.AverageMeter import *
+from src.utils.AverageMeter import *
 
 device = torch.device('cuda:0')
 LABEL_MAP = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
