@@ -1,8 +1,5 @@
 import argparse
-
 import numpy as np
-import torch
-from torch.optim import *
 from modules.server import *
 
 SEED = 1
@@ -54,7 +51,6 @@ parser.add_argument('--calculate_val', default='True',
 parser.add_argument('--is_PA', default='True', help='apply peer anonymization')
 parser.add_argument('--include_C8', default='True', help='include client 8 in the training')
 parser.add_argument('--fed_prox', default='False', help='apply fedprox')
-
 
 if __name__ == '__main__':
     args = parser.parse_args()

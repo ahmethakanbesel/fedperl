@@ -1,10 +1,7 @@
-import torch
-import torch.nn as nn
-from efficientnet_pytorch import EfficientNet
 from scipy.stats import truncnorm
-from data.data_FL import SkinData
-from modules.client import *
-from modules.similarity_manager import *
+from src.modules.client import *
+from src.modules.similarity_manager import *
+from src.data.data_FL import Data
 from scipy.spatial import KDTree
 from torch.utils.data import DataLoader
 import copy
@@ -36,7 +33,7 @@ class Server:
         self.global_model = self.global_model.cuda()
         self.global_model = self.global_model.to(device)
 
-        self.data = SkinData(self.args.data_path, self.args.clients_path)
+        self.data = Data(self.args.data_path, self.args.clients_path)
         self.train_loaders = []
         self.val_loaders = []
         self.test_loaders = []

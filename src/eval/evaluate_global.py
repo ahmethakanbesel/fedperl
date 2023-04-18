@@ -1,6 +1,8 @@
 import numpy as np
 import openpyxl
 import torch
+
+from src.data.brain import BrainDataset
 from src.modules import models
 from openpyxl import Workbook
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
@@ -9,18 +11,12 @@ from torch import nn
 from src.data.data_FL import MyDataset, val_transform
 from src.eval.database import Database
 
-LABEL_MAP = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
-             'subarachnoid': 3, 'subdural': 4}
-lesions_names = ['epidural', 'intraparenchymal', 'intraventricular', 'subarachnoid', 'subdural']
-lesions_indexs = [0, 1, 2, 3, 4]
-
-num_classes = 5
-batchSize = 16
-data_path = '../../dataset/'
-name = 'FedPerl'
+BATCH_SIZE = 16
+DATA_PATH = '../../dataset/'
 RESULTS_FILE = 'All_Scores_Global.xlsx'
 DB_FILE = 'results.db'
-db = Database(DB_FILE)
+DATASET = BrainDataset(DATA_PATH + '/dataset_img.npy', DATA_PATH + '/dataset_lbl.npy')
+DB = Database(DB_FILE)
 
 
 def predict(model, loader):
@@ -30,7 +26,7 @@ def predict(model, loader):
     with torch.no_grad():
         for batch_idx, sample_batched in enumerate(loader):
             X = sample_batched[0].type(torch.cuda.FloatTensor)
-            img_labels = [LABEL_MAP[label] for label in sample_batched[1]]
+            img_labels = [DATASET.label_map[label] for label in sample_batched[1]]
             y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
             # y = sample_batched[1].type(torch.cuda.LongTensor)
             y_gt.append(y.cpu())
@@ -108,7 +104,7 @@ def generate_summary(model_path):
     """
     models_list = [model_path]
 
-    model = models.get_model(num_classes)
+    model = models.get_model(DATASET.num_classes)
     architecture = model.__class__.__name__
     device = torch.device('cuda:0')
     model = nn.DataParallel(model)
@@ -122,9 +118,9 @@ def generate_summary(model_path):
     for name in models_list:
         test_ds, val_ds = get_dataset()
 
-        valid_loader = torch.utils.data.DataLoader(val_ds, batch_size=batchSize, shuffle='False', num_workers=0,
+        valid_loader = torch.utils.data.DataLoader(val_ds, batch_size=BATCH_SIZE, shuffle='False', num_workers=0,
                                                    pin_memory=True)
-        test_loader = torch.utils.data.DataLoader(test_ds, batch_size=batchSize, shuffle='False', num_workers=0,
+        test_loader = torch.utils.data.DataLoader(test_ds, batch_size=BATCH_SIZE, shuffle='False', num_workers=0,
                                                   pin_memory=True)
 
         model.load_state_dict(torch.load(name))
@@ -135,7 +131,7 @@ def generate_summary(model_path):
             ws = worksheet[0]
             y, predictions = predict(model, valid_loader if worksheet[1] == 'validation' else test_loader)
             scores = calculate_scores(y, predictions)
-            db.insert_result(name, scores['accuracy'], scores['f1'], scores['precision'], scores['recall'],
+            DB.insert_result(name, scores['accuracy'], scores['f1'], scores['precision'], scores['recall'],
                              worksheet[1], architecture)
             cl = 'A' + str(i + shift)
             ws[cl] = name
@@ -153,17 +149,10 @@ def generate_summary(model_path):
 
 
 def get_dataset():
-    images = np.load(data_path + f'/dataset_img.npy')
-    labels = np.load(data_path + f'/dataset_lbl.npy')
-
-    start_idx = 21000
-    test = [i for i in range(start_idx, start_idx + 5001)]
+    images, labels, test, validation = DATASET.get_global_test_data()
 
     img_test = images[test]
     lbl_test = labels[test]
-
-    start_idx = 0
-    validation = [i for i in range(start_idx, start_idx + 101)]
 
     img_validation = images[validation]
     lbl_validation = labels[validation]

@@ -6,12 +6,10 @@ import time
 import numpy as np
 import torch
 import torch.nn as nn
-from efficientnet_pytorch import EfficientNet
 from torch import optim
-from torch.optim import *
 from torch.utils.data import DataLoader
 from src.modules import models
-from data.data_FL import SkinData
+from data.data_FL import Data
 from utils.AverageMeter import *
 
 SEED = 1
@@ -58,7 +56,7 @@ class Trainer:
             None
         """
         self.args = args
-        self.data = SkinData(self.args.data_path, self.args.clients_path)
+        self.data = Data(self.args.data_path, self.args.clients_path)
 
     def configure(self):
         """
