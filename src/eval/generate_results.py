@@ -10,7 +10,7 @@ from efficientnet_pytorch import EfficientNet
 from openpyxl import Workbook
 from sklearn.metrics import precision_recall_fscore_support
 
-from data_FL import SkinData
+from src.data.data_FL import Data
 from src.modules import models
 
 # Compute precision, recall, F-measure and support for each class.
@@ -232,7 +232,7 @@ def get_dataset(name):
     elif 'Client9' in name:
         cid = 9
 
-    data = SkinData(data_path, None)
+    data = Data(data_path, None)
     test_ds, val_ds = data.load_clients_test_val(cid)
 
     return test_ds, val_ds
