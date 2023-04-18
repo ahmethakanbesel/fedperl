@@ -2,6 +2,7 @@ from scipy.stats import truncnorm
 from src.modules.client import *
 from src.modules.similarity_manager import *
 from src.data.data_FL import Data
+from src.modules.settings import DATASET
 from scipy.spatial import KDTree
 from torch.utils.data import DataLoader
 import copy
@@ -11,8 +12,6 @@ import time
 from src.modules import models
 
 device = torch.device('cuda:0')
-LABEL_MAP = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
-             'subarachnoid': 3, 'subdural': 4}
 
 
 class Server:
@@ -384,7 +383,7 @@ class Server:
         # criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(self.server_clss_weights))
         for batch_idx, sample_batched in enumerate(self.server_loader):
             X = sample_batched[0].type(torch.cuda.FloatTensor)
-            img_labels = [LABEL_MAP[label] for label in sample_batched[1]]
+            img_labels = [DATASET.label_map[label] for label in sample_batched[1]]
 
             y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
             # y = sample_batched[1].type(torch.cuda.LongTensor)
@@ -417,7 +416,7 @@ class Server:
         for batch_idx, sample_batched in enumerate(self.server_loader):
             X = sample_batched[0].type(torch.cuda.FloatTensor)
             # y = sample_batched[1].type(torch.cuda.LongTensor)
-            img_labels = [LABEL_MAP[label] for label in sample_batched[1]]
+            img_labels = [DATASET.label_map[label] for label in sample_batched[1]]
 
             y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
             N = X.size(0)

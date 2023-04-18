@@ -3,7 +3,7 @@ from torch.utils.data import Dataset
 from torchvision import transforms
 
 from src.utils.randaug import RandAugment
-from src.data.brain import BrainDataset
+from src.modules.settings import DATASET
 
 # Define transforms for dataset
 train_transform = transforms.Compose(
@@ -54,7 +54,7 @@ class Data:
     def __init__(self, data_path, clients_path):
         self.data_path = data_path
         self.clients = clients_path
-        self.dataset = BrainDataset(self.data_path + 'dataset_img.npy', self.data_path + 'dataset_lbl.npy')
+        self.dataset = DATASET
         self.dataset.clients_path = self.data_path + f'/clients/'
 
     def load_server(self):

@@ -2,7 +2,7 @@ import numpy as np
 import openpyxl
 import torch
 
-from src.data.brain import BrainDataset
+from src.modules.settings import DATASET
 from src.modules import models
 from openpyxl import Workbook
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
@@ -12,10 +12,8 @@ from src.data.data_FL import MyDataset, val_transform
 from src.eval.database import Database
 
 BATCH_SIZE = 16
-DATA_PATH = '../../dataset/'
 RESULTS_FILE = 'All_Scores_Global.xlsx'
 DB_FILE = 'results.db'
-DATASET = BrainDataset(DATA_PATH + '/dataset_img.npy', DATA_PATH + '/dataset_lbl.npy')
 DB = Database(DB_FILE)
 
 
