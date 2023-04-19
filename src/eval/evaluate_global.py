@@ -1,3 +1,5 @@
+import json
+
 import numpy as np
 import openpyxl
 import torch
@@ -5,7 +7,7 @@ import torch
 from src.modules.settings import DATASET
 from src.modules import models
 from openpyxl import Workbook
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report
 from torch import nn
 
 from src.data.data_FL import MyDataset, val_transform
@@ -43,7 +45,7 @@ def calculate_scores(y, predictions):
         predictions: predictions
 
     Returns:
-        scores: dictionary containing accuracy, F1-score, precision, and recall
+        scores: dictionary containing accuracy, F1-score, precision, recall, and class-based F1-scores
     """
 
     # Calculate accuracy
@@ -58,12 +60,32 @@ def calculate_scores(y, predictions):
     # Calculate recall
     recall = recall_score(y, predictions, average='weighted')
 
+    # Calculate class-based F1-scores
+    class_report = classification_report(y, predictions, output_dict=True)
+    class_f1_scores = {DATASET.classes[int(k)]: v['f1-score'] for k, v in class_report.items() if k.isnumeric()}
+
+    # Calculate class-based accuracies
+    unique_classes = set(y)
+    class_accuracies = {}
+    for cls in unique_classes:
+        correct = 0
+        total = 0
+        for true_label, pred_label in zip(y, predictions):
+            if true_label == cls:
+                total += 1
+                if true_label == pred_label:
+                    correct += 1
+        accuracy = correct / total if total > 0 else 0
+        class_accuracies[DATASET.classes[cls]] = accuracy
+
     # Create dictionary to store the scores
     scores = {
         'accuracy': accuracy,
         'f1': f1,
         'precision': precision,
-        'recall': recall
+        'recall': recall,
+        'class_f1_scores': class_f1_scores,
+        'class_accuracies': class_accuracies
     }
 
     return scores
@@ -116,9 +138,9 @@ def generate_summary(model_path):
     for name in models_list:
         test_ds, val_ds = get_dataset()
 
-        valid_loader = torch.utils.data.DataLoader(val_ds, batch_size=BATCH_SIZE, shuffle='False', num_workers=0,
+        valid_loader = torch.utils.data.DataLoader(val_ds, batch_size=BATCH_SIZE, shuffle=False, num_workers=0,
                                                    pin_memory=True)
-        test_loader = torch.utils.data.DataLoader(test_ds, batch_size=BATCH_SIZE, shuffle='False', num_workers=0,
+        test_loader = torch.utils.data.DataLoader(test_ds, batch_size=BATCH_SIZE, shuffle=False, num_workers=0,
                                                   pin_memory=True)
 
         model.load_state_dict(torch.load(name))
@@ -130,7 +152,7 @@ def generate_summary(model_path):
             y, predictions = predict(model, valid_loader if worksheet[1] == 'validation' else test_loader)
             scores = calculate_scores(y, predictions)
             DB.insert_result(name, scores['accuracy'], scores['f1'], scores['precision'], scores['recall'],
-                             worksheet[1], architecture)
+                             worksheet[1], architecture, json.dumps(scores['class_f1_scores']), json.dumps(scores['class_accuracies']))
             cl = 'A' + str(i + shift)
             ws[cl] = name
             cl = 'B' + str(i + shift)
