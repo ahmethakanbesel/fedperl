@@ -4,7 +4,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 
-log_path = '/home/tariq/code/isic2019/N8logs/nyp_done/'
+log_path = '../../weights/'
 
 
 
