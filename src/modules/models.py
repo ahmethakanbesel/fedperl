@@ -2,7 +2,7 @@ import torchvision
 
 
 def get_model(num_classes: int):
-    return efficientnet(num_classes)
+    return densenet(num_classes)
 
 
 def efficientnet(num_classes: int):
