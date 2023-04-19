@@ -601,7 +601,8 @@ class Server:
                 if vacc >= best_acc_glob:
                     best_acc_glob = vacc
                     best_model_wts = copy.deepcopy(self.global_model.state_dict())
-                    torch.save(best_model_wts, os.path.join(self.models_folder, 'Glob{}.pt'.format(self.name)))
+                    torch.save(best_model_wts,
+                               os.path.join(self.models_folder, 'Glob{}-{}.pt'.format(self.name, str(time.time()))))
                     del best_model_wts
 
                 # save check point every 10 rounds
