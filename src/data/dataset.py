@@ -19,6 +19,10 @@ class Dataset(ABC):
         pass
 
     @abstractmethod
+    def get_client_class_distribution(self, client_id):
+        pass
+
+    @abstractmethod
     def get_client_test_val_data(self, client_id):
         pass
 

@@ -37,6 +37,21 @@ class BrainDataset(Dataset):
 
         return len(idx_l), len(idx_u), len(idx_v)
 
+    def get_client_class_distribution(self, client_id):
+        client_classes = {}
+        for c in self.classes:
+            client_classes[c] = 0
+
+        images, labels, idx_l, idx_u, idx_v = self.get_client_data(client_id)
+
+        for l in idx_l:
+            client_classes[labels[l]] += 1
+
+        for u in idx_u:
+            client_classes[labels[u]] += 1
+
+        return client_classes
+
     def get_client_test_val_data(self, client_id):
         img_t = np.load(self.clients_path + f'client-{str(client_id)}-U_img.npy')
         lbl_t = np.load(self.clients_path + f'client-{str(client_id)}-U_lbl.npy')
