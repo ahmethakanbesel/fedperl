@@ -5,7 +5,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
-log_path = 'path to log file contains the similarity matrix'
+log_path = '../../weights/'
 
 
 def plot_log():
@@ -14,8 +14,12 @@ def plot_log():
     sorted_files = sorted(Path(log_path).iterdir(), key=os.path.getmtime)
     c = 0
     for logfile in sorted_files:
+        if "npy" not in logfile.name:
+            continue
         logfile = logfile.name
-        arr = np.around(np.load(log_path + logfile) * 100, decimals=1)
+        data = np.load(log_path + "client_peers_Perl_c8True_avgTrue_proxFalse.npy")
+        arr = np.around(data * 100, decimals=1)
+        #arr = np.around(np.load(log_path + logfile) * 100, decimals=1)
         plot_confusion_matrix(arr, clsses, 'similarity', c)
         c += 1
 
