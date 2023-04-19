@@ -15,6 +15,10 @@ class Dataset(ABC):
         pass
 
     @abstractmethod
+    def get_client_data_counts(self, client_id):
+        pass
+
+    @abstractmethod
     def get_client_test_val_data(self, client_id):
         pass
 

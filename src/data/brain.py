@@ -32,6 +32,11 @@ class BrainDataset(Dataset):
 
         return images, labels, idx_l, idx_u, idx_v
 
+    def get_client_data_counts(self, client_id):
+        idx_l, idx_u, idx_v = self.__get_client_image_ids_20L_80U(client_id)
+
+        return len(idx_l), len(idx_u), len(idx_v)
+
     def get_client_test_val_data(self, client_id):
         img_t = np.load(self.clients_path + f'client-{str(client_id)}-U_img.npy')
         lbl_t = np.load(self.clients_path + f'client-{str(client_id)}-U_lbl.npy')
