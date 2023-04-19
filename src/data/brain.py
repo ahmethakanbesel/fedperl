@@ -14,20 +14,19 @@ class BrainDataset(Dataset):
         for i in range(self.num_classes):
             self.label_map[self.classes[i]] = i
         self.clients_path = None
+        self.images = np.load(self.image_file)
+        self.labels = np.load(self.label_file)
 
     def get_classes(self):
         return self.classes
 
     def get_server_data(self):
-        img = np.load(self.image_file)
-        lbl = np.load(self.label_file)
+        images, labels = self.__get_images_labels()
         idx = np.array([0])
-        return img[idx], lbl[idx]
+        return images[idx], labels[idx]
 
     def get_client_data(self, client_id):
-        images = np.load(self.image_file)
-        labels = np.load(self.label_file)
-
+        images, labels = self.__get_images_labels()
         idx_l, idx_u, idx_v = self.__get_client_image_ids_20L_80U(client_id)
 
         return images, labels, idx_l, idx_u, idx_v
@@ -61,8 +60,7 @@ class BrainDataset(Dataset):
         return img_t, lbl_t, img_v, lbl_v
 
     def get_global_test_data(self):
-        images = np.load(self.image_file)
-        labels = np.load(self.label_file)
+        images, labels = self.__get_images_labels()
 
         start_idx = 21000
         test = [i for i in range(start_idx, start_idx + 5001)]
@@ -71,6 +69,14 @@ class BrainDataset(Dataset):
         validation = [i for i in range(start_idx, start_idx + 101)]
 
         return images, labels, test, validation
+
+    def __get_images_labels(self):
+        images, labels = self.images, self.labels
+        if images is None:
+            images = np.load(self.image_file)
+        if labels is None:
+            labels = np.load(self.label_file)
+        return images, labels
 
     def __get_client_image_ids_20L_80U(self, client_id):
         labeled, unlabeled, validation = [], [], []
