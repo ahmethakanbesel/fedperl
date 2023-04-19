@@ -461,24 +461,24 @@ class Server:
         self.client_clss_weights = []
 
         server_val, self.server_clss_weights = self.data.load_server()
-        self.server_loader = DataLoader(server_val, batch_size=self.batch_size, shuffle='False',
+        self.server_loader = DataLoader(server_val, batch_size=self.batch_size, shuffle=False,
                                         num_workers=self.args.num_workers,
                                         pin_memory=True)
 
         for clnt in range(self.num_clients):
             train_ds, train_dsu, val_ds, weights = self.data.load_clients_ssl(clnt)
             if len(train_ds) > 0:
-                train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle='True',
+                train_loader = DataLoader(train_ds, batch_size=self.batch_size, shuffle=True,
                                           num_workers=self.args.num_workers,
                                           pin_memory=True)
                 self.train_loaders.append(train_loader)
             if len(train_dsu) > 0:
-                train_loader_u = DataLoader(train_dsu, batch_size=self.batch_size, shuffle='True',
+                train_loader_u = DataLoader(train_dsu, batch_size=self.batch_size, shuffle=True,
                                             num_workers=self.args.num_workers,
                                             pin_memory=True)
                 self.train_loaders_u.append(train_loader_u)
 
-            val_loader = DataLoader(val_ds, batch_size=self.batch_size, shuffle='False',
+            val_loader = DataLoader(val_ds, batch_size=self.batch_size, shuffle=False,
                                     num_workers=self.args.num_workers, pin_memory=True)
             self.val_loaders.append(val_loader)
             self.client_clss_weights.append(weights)
