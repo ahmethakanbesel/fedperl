@@ -26,7 +26,7 @@ for i in range(len(clients)):
 
 # Add labels and legend
 ax.set_ylabel('Image Counts')
-ax.set_xlabel('Clients')
+ax.set_xlabel('Classes')
 # ax.set_title('Class Distribution Among the Clients')
 ax.legend()
 
