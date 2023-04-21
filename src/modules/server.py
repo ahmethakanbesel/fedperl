@@ -383,10 +383,10 @@ class Server:
         # criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(self.server_clss_weights))
         for batch_idx, sample_batched in enumerate(self.server_loader):
             X = sample_batched[0].type(torch.cuda.FloatTensor)
-            img_labels = [DATASET.label_map[label] for label in sample_batched[1]]
+            # img_labels = [DATASET.label_map[label] for label in sample_batched[1]]
 
-            y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
-            # y = sample_batched[1].type(torch.cuda.LongTensor)
+            # y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
+            y = sample_batched[1].type(torch.cuda.LongTensor)
             N = X.size(0)
             output = self.global_model(X)
             prediction = output.cpu().max(1, keepdim=True)[1]
@@ -415,10 +415,10 @@ class Server:
         # criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(self.server_clss_weights))
         for batch_idx, sample_batched in enumerate(self.server_loader):
             X = sample_batched[0].type(torch.cuda.FloatTensor)
-            # y = sample_batched[1].type(torch.cuda.LongTensor)
-            img_labels = [DATASET.label_map[label] for label in sample_batched[1]]
+            y = sample_batched[1].type(torch.cuda.LongTensor)
+            # img_labels = [DATASET.label_map[label] for label in sample_batched[1]]
 
-            y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
+            # y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
             N = X.size(0)
             output = self.peer(X)
             prediction = output.cpu().max(1, keepdim=True)[1]
@@ -602,7 +602,7 @@ class Server:
                     best_acc_glob = vacc
                     best_model_wts = copy.deepcopy(self.global_model.state_dict())
                     torch.save(best_model_wts,
-                               os.path.join(self.models_folder, 'Glob{}-{}.pt'.format(self.name, str(time.time()))))
+                               os.path.join(self.models_folder, 'Glob{}_{}.pt'.format(self.name, str(int(time.time())))))
                     del best_model_wts
 
                 # save check point every 10 rounds

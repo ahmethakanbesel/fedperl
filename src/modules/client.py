@@ -190,10 +190,10 @@ class Client:
 
             x = sample_batched[0].type(torch.cuda.FloatTensor)
 
-            img_labels = [DATASET.label_map[label] for label in sample_batched[1]]
+            # img_labels = [DATASET.label_map[label] for label in sample_batched[1]]
 
-            y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
-            # y = sample_batched[1].type(torch.cuda.LongTensor)
+            # y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
+            y = sample_batched[1].type(torch.cuda.LongTensor)
             x_u = sample_batched_u[0].type(torch.cuda.FloatTensor)
             x_u_aug = sample_batched_u[2].type(torch.cuda.FloatTensor)
             n = x.size(0)
@@ -251,10 +251,10 @@ class Client:
         # criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(clss_weights))
         for batch_idx, sample_batched in enumerate(val_loader):
             x = sample_batched[0].type(torch.cuda.FloatTensor)
-            img_labels = [DATASET.label_map[label] for label in sample_batched[1]]
+            # img_labels = [DATASET.label_map[label] for label in sample_batched[1]]
 
-            y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
-            # y = sample_batched[1].type(torch.cuda.LongTensor)
+            # y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
+            y = sample_batched[1].type(torch.cuda.LongTensor)
             n = x.size(0)
             output = self.local_model(x)
             prediction = output.cpu().max(1, keepdim=True)[1]

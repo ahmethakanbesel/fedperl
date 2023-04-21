@@ -23,19 +23,19 @@ for file in files:
         for r in reader:
             if rows_processed == file[1]:
                 rows_processed = 0
-            images.append(np.array(Image.open(os.path.join(img_path, r['ImageID'])).convert('RGB')))
+            images.append(np.array(Image.open(os.path.join(img_path, r['ImageID'])).convert('L')))
             if r['epidural'] == "1":
-                labels.append('epidural')
+                labels.append(0)
             elif r['intraparenchymal'] == "1":
-                labels.append('intraparenchymal')
+                labels.append(1)
             elif r['intraventricular'] == "1":
-                labels.append('intraventricular')
+                labels.append(2)
             elif r['subarachnoid'] == "1":
-                labels.append('subarachnoid')
+                labels.append(3)
             elif r['subdural'] == "1":
-                labels.append('subdural')
+                labels.append(4)
             else:
                 labels.append('healthy')
 
-np.save('./dataset_img.npy', np.array(images))
-np.save('./dataset_lbl.npy', np.array(labels))
+np.save('./ct_dataset_img.npy', np.array(images))
+np.save('./ct_dataset_lbl.npy', np.array(labels))

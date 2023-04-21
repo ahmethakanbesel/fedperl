@@ -38,7 +38,7 @@ class BrainDataset(Dataset):
 
     def get_client_class_distribution(self, client_id):
         client_classes = {}
-        for c in self.classes:
+        for c in range(len(self.classes)):
             client_classes[c] = 0
 
         images, labels, idx_l, idx_u, idx_v = self.get_client_data(client_id)
