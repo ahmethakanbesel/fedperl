@@ -3,15 +3,14 @@ import json
 import numpy as np
 import openpyxl
 import torch
-
-from src.modules.settings import DATASET
-from src.modules import models
 from openpyxl import Workbook
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report
 from torch import nn
 
 from src.data.data_FL import MyDataset, val_transform
 from src.eval.database import Database
+from src.modules import models
+from src.modules.settings import DATASET
 
 BATCH_SIZE = 16
 RESULTS_FILE = 'All_Scores_Global.xlsx'
@@ -26,9 +25,9 @@ def predict(model, loader):
     with torch.no_grad():
         for batch_idx, sample_batched in enumerate(loader):
             X = sample_batched[0].type(torch.cuda.FloatTensor)
-            img_labels = [DATASET.label_map[label] for label in sample_batched[1]]
-            y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
-            # y = sample_batched[1].type(torch.cuda.LongTensor)
+            # img_labels = [DATASET.label_map[label] for label in sample_batched[1]]
+            # y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
+            y = sample_batched[1].type(torch.cuda.LongTensor)
             y_gt.append(y.cpu())
             y_pred = model(X)
             y_pred = np.argmax(y_pred.cpu(), axis=1)
@@ -52,16 +51,16 @@ def calculate_scores(y, predictions):
     accuracy = accuracy_score(y, predictions)
 
     # Calculate F1-score
-    f1 = f1_score(y, predictions, average='weighted')
+    f1 = f1_score(y, predictions, average='weighted', zero_division=True)
 
     # Calculate precision
-    precision = precision_score(y, predictions, average='weighted')
+    precision = precision_score(y, predictions, average='weighted', zero_division=True)
 
     # Calculate recall
-    recall = recall_score(y, predictions, average='weighted')
+    recall = recall_score(y, predictions, average='weighted', zero_division=True)
 
     # Calculate class-based F1-scores
-    class_report = classification_report(y, predictions, output_dict=True)
+    class_report = classification_report(y, predictions, output_dict=True, zero_division=True)
     class_f1_scores = {DATASET.classes[int(k)]: v['f1-score'] for k, v in class_report.items() if k.isnumeric()}
 
     # Calculate class-based accuracies
@@ -184,4 +183,4 @@ def get_dataset():
 
 
 if __name__ == '__main__':
-    generate_summary('../../models/GlobPerl_c8True_avgTrue_proxFalse.pt')
+    generate_summary('../../models/GlobPerl_c8True_avgTrue_proxFalse_1681909976.pt')
