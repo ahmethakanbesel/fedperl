@@ -3,7 +3,7 @@ import numpy as np
 from src.data.dataset import Dataset
 
 
-class BrainDataset(Dataset):
+class ISICDataset(Dataset):
     def __init__(self, image_file, label_file):
         self.image_file = image_file
         self.label_file = label_file
