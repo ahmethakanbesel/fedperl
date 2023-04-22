@@ -16,6 +16,7 @@ class BrainDataset(Dataset):
         self.clients_path = None
         self.images = np.load(self.image_file)
         self.labels = np.load(self.label_file)
+        self.distribution = self.__get_client_image_ids_20L_80U
 
     def get_classes(self):
         return self.classes
@@ -27,12 +28,12 @@ class BrainDataset(Dataset):
 
     def get_client_data(self, client_id):
         images, labels = self.__get_images_labels()
-        idx_l, idx_u, idx_v = self.__get_client_image_ids_20L_80U(client_id)
+        idx_l, idx_u, idx_v = self.distribution(client_id)
 
         return images, labels, idx_l, idx_u, idx_v
 
     def get_client_data_counts(self, client_id):
-        idx_l, idx_u, idx_v = self.__get_client_image_ids_20L_80U(client_id)
+        idx_l, idx_u, idx_v = self.distribution(client_id)
 
         return len(idx_l), len(idx_u), len(idx_v)
 
