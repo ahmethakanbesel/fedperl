@@ -18,8 +18,8 @@ plt.xticks(range(DATASET.num_classes), [f"C{i+1}" for i in range(DATASET.num_cla
 
 # Set plot title, labels, and legend
 plt.title("Class Distribution of the Test Dataset")
-plt.xlabel("Client")
-plt.ylabel("Accuracy")
+plt.xlabel("Class")
+plt.ylabel("Image Count")
 plt.legend()
 
 # Show the plot
