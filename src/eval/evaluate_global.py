@@ -52,6 +52,7 @@ def calculate_scores(y, predictions):
 
     # Calculate F1-score
     f1 = f1_score(y, predictions, average='weighted', zero_division=True)
+    f12 = f1_score(y, predictions, average=None, zero_division=True)
 
     # Calculate precision
     precision = precision_score(y, predictions, average='weighted', zero_division=True)
@@ -74,8 +75,8 @@ def calculate_scores(y, predictions):
                 total += 1
                 if true_label == pred_label:
                     correct += 1
-        client_accuracy = correct / total if total > 0 else 0
-        class_accuracies[DATASET.classes[cls]] = client_accuracy
+        class_accuracy = correct / total if total > 0 else 0
+        class_accuracies[DATASET.classes[cls]] = class_accuracy
 
     # Create dictionary to store the scores
     scores = {
