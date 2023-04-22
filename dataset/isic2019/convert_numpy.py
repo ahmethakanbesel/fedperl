@@ -22,23 +22,23 @@ for file in files:
             if rows_processed == file[1]:
                 rows_processed = 0
             images.append(np.array(Image.open(os.path.join(img_path, r['image'] + '.jpg')).convert('RGB')))
-            if r['MEL'] == "1":
+            if r['MEL'] == "1.0":
                 labels.append(0)
-            elif r['NV'] == "1":
+            elif r['NV'] == "1.0":
                 labels.append(1)
-            elif r['BCC'] == "1":
+            elif r['BCC'] == "1.0":
                 labels.append(2)
-            elif r['AK'] == "1":
+            elif r['AK'] == "1.0":
                 labels.append(3)
-            elif r['BKL'] == "1":
+            elif r['BKL'] == "1.0":
                 labels.append(4)
-            elif r['DF'] == "1":
+            elif r['DF'] == "1.0":
                 labels.append(5)
-            elif r['VASC'] == "1":
+            elif r['VASC'] == "1.0":
                 labels.append(6)
-            elif r['SCC'] == "1":
+            elif r['SCC'] == "1.0":
                 labels.append(7)
-            elif r['UNK'] == "1":
+            elif r['UNK'] == "1.0":
                 labels.append(8)
             else:
                 labels.append('healthy')
