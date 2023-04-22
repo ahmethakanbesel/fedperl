@@ -71,6 +71,18 @@ class BrainDataset(Dataset):
 
         return images, labels, test, validation
 
+    def get_global_test_data_distribution(self):
+        classes = {}
+        for c in range(len(self.classes)):
+            classes[c] = 0
+
+        images, labels, idx_t, idx_v = self.get_global_test_data()
+
+        for t in idx_t:
+            classes[labels[t]] += 1
+
+        return classes
+
     def __get_images_labels(self):
         images, labels = self.images, self.labels
         if images is None:
