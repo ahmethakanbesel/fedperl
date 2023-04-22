@@ -160,8 +160,8 @@ class Client:
             self.peers_found = False
 
         optimizer = optim.Adam(self.local_model.parameters(), lr=curr_lr)
-        criterion = nn.CrossEntropyLoss()
-        # criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(self.clss_weights))
+        # criterion = nn.CrossEntropyLoss()
+        criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(self.clss_weights))
         train_loss = AverageMeter()
         train_acc = AverageMeter()
         trainloader_l_iter = enumerate(self.train_loader)
@@ -247,8 +247,8 @@ class Client:
         self.local_model.eval()
         val_loss = AverageMeter()
         val_acc = AverageMeter()
-        criterion = nn.CrossEntropyLoss()
-        # criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(clss_weights))
+        # criterion = nn.CrossEntropyLoss()
+        criterion = nn.CrossEntropyLoss(weight=torch.cuda.FloatTensor(clss_weights))
         for batch_idx, sample_batched in enumerate(val_loader):
             x = sample_batched[0].type(torch.cuda.FloatTensor)
             # img_labels = [DATASET.label_map[label] for label in sample_batched[1]]
