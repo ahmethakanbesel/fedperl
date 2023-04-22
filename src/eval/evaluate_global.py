@@ -48,17 +48,16 @@ def calculate_scores(y, predictions):
     """
 
     # Calculate accuracy
-    accuracy = accuracy_score(y, predictions)
+    # accuracy = accuracy_score(y, predictions)
 
     # Calculate F1-score
-    f1 = f1_score(y, predictions, average='weighted', zero_division=True)
-    f12 = f1_score(y, predictions, average=None, zero_division=True)
+    # f1 = f1_score(y, predictions, average='weighted', zero_division=True)
 
     # Calculate precision
-    precision = precision_score(y, predictions, average='weighted', zero_division=True)
+    # precision = precision_score(y, predictions, average='weighted', zero_division=True)
 
     # Calculate recall
-    recall = recall_score(y, predictions, average='weighted', zero_division=True)
+    # recall = recall_score(y, predictions, average='weighted', zero_division=True)
 
     # Calculate class-based F1-scores
     class_report = classification_report(y, predictions, output_dict=True, zero_division=True)
@@ -80,10 +79,10 @@ def calculate_scores(y, predictions):
 
     # Create dictionary to store the scores
     scores = {
-        'accuracy': accuracy,
-        'f1': f1,
-        'precision': precision,
-        'recall': recall,
+        'accuracy': class_report['accuracy'],
+        'f1': class_report['weighted avg']['f1-score'],
+        'precision': class_report['weighted avg']['precision'],
+        'recall': class_report['weighted avg']['recall'],
         'class_f1_scores': class_f1_scores,
         'class_accuracies': class_accuracies
     }
