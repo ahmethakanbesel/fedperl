@@ -4,13 +4,10 @@ import numpy as np
 import openpyxl
 import torch
 import torch.nn as nn
-# pytorch libraries
-from efficientnet_pytorch import EfficientNet
-# sklearn libraries
 from openpyxl import Workbook
 from sklearn.metrics import precision_recall_fscore_support
 
-from src.data.data_FL import Data
+from src.data.data_FL import val_transform, MyDataset
 from src.modules import models
 
 # Compute precision, recall, F-measure and support for each class.
@@ -20,18 +17,14 @@ from src.modules import models
 # The F-beta score weights recall more than precision by a factor of beta.
 # beta == 1.0 means recall and precision are equally important.
 # The support is the number of occurrences of each class in y_true.
-
-LABEL_MAP = {'epidural': 0, 'intraparenchymal': 1, 'intraventricular': 2,
-             'subarachnoid': 3, 'subdural': 4}
-lesions_names = ['epidural', 'intraparenchymal', 'intraventricular', 'subarachnoid', 'subdural']
-lesions_indexs = [0, 1, 2, 3, 4]
+from src.modules.settings import DATASET
 
 num_classes = 5
 batchSize = 16
 data_path = '../../dataset/'
 name = 'FedPerl'
 RESULTS_FILE = 'All_Scores.xlsx'
-
+DATASET.clients_path = '../../dataset/clients/'
 
 def predict(model, loader):
     model.eval()
@@ -40,61 +33,14 @@ def predict(model, loader):
     with torch.no_grad():
         for batch_idx, sample_batched in enumerate(loader):
             X = sample_batched[0].type(torch.cuda.FloatTensor)
-            img_labels = [LABEL_MAP[label] for label in sample_batched[1]]
-            y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
-            # y = sample_batched[1].type(torch.cuda.LongTensor)
+            # img_labels = [LABEL_MAP[label] for label in sample_batched[1]]
+            # y = torch.tensor(img_labels, dtype=torch.long).to('cuda')
+            y = sample_batched[1].type(torch.cuda.LongTensor)
             y_gt.append(y.cpu())
             y_pred = model(X)
             y_pred = np.argmax(y_pred.cpu(), axis=1)
             y_preds.append(y_pred)
     return np.concatenate(y_gt), np.concatenate(y_preds)
-
-
-def calculate_scores_manually(y, predictions):
-    """
-    calculate scores
-
-    Parameters:
-       y: ground truths
-       predictions: predictions
-
-    Returns:
-        None
-    """
-    TP = 0
-    FP = 0
-    TN = 0
-    FN = 0
-
-    for i in range(len(predictions)):
-        if y[i] == predictions[i]:
-            TP += 1
-        if y[i] != predictions[i]:
-            FP += 1
-        if y[i] == predictions[i] == 0:
-            TN += 1
-        if predictions[i] == 0 and y[i] != predictions[i]:
-            FN += 1
-
-    # Sensitivity, hit rate, recall, or true positive rate
-    TPR = TP / (TP + FN)
-    # Specificity or true negative rate
-    TNR = TN / (TN + FP)
-    # Precision or positive predictive value
-    PPV = TP / (TP + FP)
-    # Negative predictive value
-    NPV = TN / (TN + FN)
-    # Fall out or false positive rate
-    FPR = FP / (FP + TN)
-    # False negative rate
-    FNR = FN / (TP + FN)
-    # False discovery rate
-    FDR = FP / (TP + FP)
-    # Overall accuracy
-    ACC = (TP + TN) / (TP + FP + FN + TN)
-
-    # F1 = 2 * (precision * recall) / (precision + recall)
-    F1 = 2 * (PPV * TPR) / (PPV + TPR)
 
 
 def calculate_scores(y, predictions):
@@ -160,7 +106,7 @@ def generate_summary(model_path):
     i = 1
     shift = 1
     for name in models_list:
-        if "client" not in name:
+        if "Client" not in name:
             continue
         test_ds, val_ds = get_dataset(name)
 
@@ -232,8 +178,16 @@ def get_dataset(name):
     elif 'Client9' in name:
         cid = 9
 
-    data = Data(data_path, None)
-    test_ds, val_ds = data.load_clients_test_val(cid)
+    images, labels, test, validation = DATASET.get_global_test_data()
+
+    img_test = images[test]
+    lbl_test = labels[test]
+
+    img_validation = images[validation]
+    lbl_validation = labels[validation]
+
+    test_ds = MyDataset(img_test, lbl_test, val_transform)
+    val_ds = MyDataset(img_validation, lbl_validation, val_transform)
 
     return test_ds, val_ds
 
