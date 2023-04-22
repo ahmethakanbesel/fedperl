@@ -74,8 +74,8 @@ def calculate_scores(y, predictions):
                 total += 1
                 if true_label == pred_label:
                     correct += 1
-        accuracy = correct / total if total > 0 else 0
-        class_accuracies[DATASET.classes[cls]] = accuracy
+        client_accuracy = correct / total if total > 0 else 0
+        class_accuracies[DATASET.classes[cls]] = client_accuracy
 
     # Create dictionary to store the scores
     scores = {
@@ -151,7 +151,8 @@ def generate_summary(model_path):
             y, predictions = predict(model, valid_loader if worksheet[1] == 'validation' else test_loader)
             scores = calculate_scores(y, predictions)
             DB.insert_result(name, scores['accuracy'], scores['f1'], scores['precision'], scores['recall'],
-                             worksheet[1], architecture, json.dumps(scores['class_f1_scores']), json.dumps(scores['class_accuracies']))
+                             worksheet[1], architecture, json.dumps(scores['class_f1_scores']),
+                             json.dumps(scores['class_accuracies']))
             cl = 'A' + str(i + shift)
             ws[cl] = name
             cl = 'B' + str(i + shift)
@@ -183,4 +184,4 @@ def get_dataset():
 
 
 if __name__ == '__main__':
-    generate_summary('../../models/GlobPerl_c8True_avgTrue_proxFalse_1681909976.pt')
+    generate_summary('../../models/GlobPerl_c8True_avgTrue_proxFalse_1682154391.pt')
