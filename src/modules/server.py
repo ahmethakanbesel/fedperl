@@ -2,9 +2,9 @@ from scipy.stats import truncnorm
 from src.modules.client import *
 from src.modules.similarity_manager import *
 from src.data.data_FL import Data
-from src.modules.settings import DATASET
 from scipy.spatial import KDTree
 from torch.utils.data import DataLoader
+from dotenv import load_dotenv
 import copy
 import os
 import time
@@ -12,6 +12,7 @@ import time
 from src.modules import models
 
 device = torch.device('cuda:0')
+load_dotenv()
 
 
 class Server:
@@ -113,7 +114,7 @@ class Server:
         self.is_PA = self.args.is_PA
         self.include_C8 = self.args.include_C8
         self.fed_prox = self.args.fed_prox
-        self.name = self.method + '_c8' + str(self.include_C8) + '_avg' + str(self.is_PA) + '_prox' + str(self.fed_prox)
+        self.name = f"{self.method}_{os.getenv('MODEL')}_{os.getenv('DATASET')}_rnd{str(self.num_rounds)}_ep{str(self.steps)}_p{str(self.num_peers)}"
 
     def build_models(self):
         """
@@ -602,7 +603,7 @@ class Server:
                     best_acc_glob = vacc
                     best_model_wts = copy.deepcopy(self.global_model.state_dict())
                     torch.save(best_model_wts,
-                               os.path.join(self.models_folder, 'Glob{}_{}.pt'.format(self.name, str(int(time.time())))))
+                               os.path.join(self.models_folder, 'Glob{}.pt'.format(self.name, )))
                     del best_model_wts
 
                 # save check point every 10 rounds
