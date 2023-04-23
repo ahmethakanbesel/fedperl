@@ -139,7 +139,7 @@ def generate_summary(model_path):
             ws = worksheet[0]
             y, predictions = predict(model, valid_loader if worksheet[1] == 'validation' else test_loader)
             scores = calculate_scores(y, predictions)
-            DB.insert_result(name, scores['accuracy'], scores['f1'], scores['precision'], scores['recall'],
+            DB.insert_result(os.path.basename(name), scores['accuracy'], scores['f1'], scores['precision'], scores['recall'],
                              worksheet[1], os.getenv('MODEL'), json.dumps(scores['class_f1_scores']),
                              json.dumps(scores['class_accuracies']))
             cl = 'A' + str(i + shift)
