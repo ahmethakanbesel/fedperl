@@ -1,31 +1,6 @@
 import numpy as np
 from torch.utils.data import Dataset
-from torchvision import transforms
-
-from src.utils.randaug import RandAugment
 from src.modules.settings import DATASET
-
-# Define transforms for dataset
-train_transform = transforms.Compose(
-    [transforms.ToPILImage(), transforms.Grayscale(num_output_channels=3),
-     transforms.RandomHorizontalFlip(),
-     transforms.RandomVerticalFlip(),
-     transforms.RandomRotation(20),
-     transforms.ColorJitter(brightness=32. / 255., saturation=0.5),
-     transforms.ToTensor(),
-     transforms.Normalize((0.0, 0.0, 0.0), (1.0, 1.0, 1.0))
-     ])
-
-trainU_transform = transforms.Compose(
-    [transforms.ToPILImage(), transforms.Grayscale(num_output_channels=3),
-     RandAugment(),
-     transforms.ToTensor(),
-     transforms.Normalize((0.0, 0.0, 0.0), (1.0, 1.0, 1.0))
-     ])
-
-val_transform = transforms.Compose([transforms.ToPILImage(), transforms.Grayscale(num_output_channels=3),
-                                    transforms.ToTensor(),
-                                    transforms.Normalize((0.0, 0.0, 0.0), (1.0, 1.0, 1.0))])
 
 
 class MyDataset(Dataset):
@@ -76,14 +51,14 @@ class Data:
             else:
                 weights[k] = missing_class_weight
 
-        val_ds = MyDataset(img_tr_l, lbl_tr_l, val_transform)
+        val_ds = MyDataset(img_tr_l, lbl_tr_l, self.dataset.get_validation_transform())
         return val_ds, list(weights.values())
 
     def load_clients_test_val(self, client_id):
         img_t, lbl_t, img_v, lbl_v = self.dataset.get_client_test_val_data(client_id)
 
-        test_ds = MyDataset(img_t, lbl_t, val_transform)
-        val_ds = MyDataset(img_v, lbl_v, val_transform)
+        test_ds = MyDataset(img_t, lbl_t, self.dataset.get_validation_transform())
+        val_ds = MyDataset(img_v, lbl_v, self.dataset.get_validation_transform())
         return test_ds, val_ds
 
     def load_clients_ssl(self, client_id):
@@ -115,9 +90,10 @@ class Data:
             else:
                 weights[k] = missing_class_weight
 
-        train_ds = MyDataset(img_tr_l, lbl_tr_l, train_transform)
-        train_uds = MyDataset(img_tr_u, lbl_tr_u, train_transform, trainU_transform)
-        val_ds = MyDataset(img_tr_v, lbl_tr_v, val_transform)
+        train_ds = MyDataset(img_tr_l, lbl_tr_l, self.dataset.get_labeled_transform())
+        train_uds = MyDataset(img_tr_u, lbl_tr_u, self.dataset.get_labeled_transform(),
+                              self.dataset.get_unlabeled_transform())
+        val_ds = MyDataset(img_tr_v, lbl_tr_v, self.dataset.get_validation_transform())
         return train_ds, train_uds, val_ds, list(weights.values())
 
     def load_clients_lower(self, client_id):
@@ -159,8 +135,8 @@ class Data:
             else:
                 weights[k] = missing_class_weight
 
-        train_ds = MyDataset(img_tr_l, lbl_tr_l, train_transform)
-        val_ds = MyDataset(img_v, lbl_v, val_transform)
+        train_ds = MyDataset(img_tr_l, lbl_tr_l, self.dataset.get_labeled_transform())
+        val_ds = MyDataset(img_v, lbl_v, self.dataset.get_validation_transform())
         return train_ds, val_ds, list(weights.values())
 
     def load_clients_upper(self, client_id):
@@ -204,6 +180,6 @@ class Data:
             else:
                 weights[k] = missing_class_weight
 
-        train_ds = MyDataset(img_tr_l, lbl_tr_l, train_transform)
-        val_ds = MyDataset(img_v, lbl_v, val_transform)
+        train_ds = MyDataset(img_tr_l, lbl_tr_l, self.dataset.get_labeled_transform())
+        val_ds = MyDataset(img_v, lbl_v, self.dataset.get_validation_transform())
         return train_ds, val_ds, list(weights.values())

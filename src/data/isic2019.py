@@ -1,6 +1,8 @@
 import numpy as np
 
 from src.data.dataset import Dataset
+from src.utils.randaug import RandAugment
+from torchvision import transforms
 
 
 class ISICDataset(Dataset):
@@ -131,3 +133,29 @@ class ISICDataset(Dataset):
             labeled = [start_idx]
             unlabeled = [i for i in range(start_idx, start_idx + 2001)]
         return labeled, unlabeled, validation
+
+    def get_labeled_transform(self):
+        return transforms.Compose([
+            transforms.ToPILImage(),
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomVerticalFlip(),
+            transforms.RandomRotation(20),
+            transforms.ColorJitter(brightness=32. / 255., saturation=0.5),
+            transforms.ToTensor(),
+            transforms.Normalize((0.0, 0.0, 0.0), (1.0, 1.0, 1.0))
+        ])
+
+    def get_unlabeled_transform(self):
+        return transforms.Compose([
+            transforms.ToPILImage(),
+            RandAugment(),
+            transforms.ToTensor(),
+            transforms.Normalize((0.0, 0.0, 0.0), (1.0, 1.0, 1.0))
+        ])
+
+    def get_validation_transform(self):
+        return transforms.Compose([
+            transforms.ToPILImage(),
+            transforms.ToTensor(),
+            transforms.Normalize((0.0, 0.0, 0.0), (1.0, 1.0, 1.0))
+        ])

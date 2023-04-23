@@ -29,3 +29,15 @@ class Dataset(ABC):
     @abstractmethod
     def get_global_test_data(self):
         pass
+
+    @abstractmethod
+    def get_labeled_transform(self):
+        pass
+
+    @abstractmethod
+    def get_unlabeled_transform(self):
+        pass
+
+    @abstractmethod
+    def get_validation_transform(self):
+        pass
