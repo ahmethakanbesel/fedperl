@@ -68,7 +68,7 @@ class BrainDataset(Dataset):
         test = [i for i in range(start_idx, start_idx + 5001)]
 
         start_idx = 21000
-        validation = [i for i in range(start_idx, start_idx + 101)]
+        validation = [i for i in range(start_idx, start_idx + 501)]
 
         return images, labels, test, validation
 
