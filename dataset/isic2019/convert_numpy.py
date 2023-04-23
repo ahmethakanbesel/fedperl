@@ -1,15 +1,18 @@
 import csv
 import os
 
+from dotenv import load_dotenv
 from PIL import Image
 
 import numpy as np
 
+load_dotenv()
+
 # [FILE, ROW_LIMIT]
 files = [
-    ['/media/muhendislik/HDD1/undergrad/datasets/isic-2019/ISIC_2019_Training_GroundTruth.csv', 1000],
+    [os.getenv('ISIC2019_CSV'), 1000],
 ]
-img_path = '/media/muhendislik/HDD1/undergrad/datasets/isic-2019/ISIC_2019_Training_Input/'
+img_path = os.getenv('ISIC2019_IMAGES')
 
 image_size = (224, 224)  # Specify the desired image size
 images = []

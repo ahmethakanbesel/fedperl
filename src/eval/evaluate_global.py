@@ -1,11 +1,12 @@
 import json
-
+import os
 import numpy as np
 import openpyxl
 import torch
 from openpyxl import Workbook
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report
+from sklearn.metrics import classification_report
 from torch import nn
+from dotenv import load_dotenv
 
 from src.data.data_FL import MyDataset, val_transform
 from src.eval.database import Database
@@ -16,6 +17,7 @@ BATCH_SIZE = 16
 RESULTS_FILE = 'All_Scores_Global.xlsx'
 DB_FILE = 'results.db'
 DB = Database(DB_FILE)
+load_dotenv()
 
 
 def predict(model, loader):
@@ -46,18 +48,6 @@ def calculate_scores(y, predictions):
     Returns:
         scores: dictionary containing accuracy, F1-score, precision, recall, and class-based F1-scores
     """
-
-    # Calculate accuracy
-    # accuracy = accuracy_score(y, predictions)
-
-    # Calculate F1-score
-    # f1 = f1_score(y, predictions, average='weighted', zero_division=True)
-
-    # Calculate precision
-    # precision = precision_score(y, predictions, average='weighted', zero_division=True)
-
-    # Calculate recall
-    # recall = recall_score(y, predictions, average='weighted', zero_division=True)
 
     # Calculate class-based F1-scores
     class_report = classification_report(y, predictions, output_dict=True, zero_division=True)
@@ -184,4 +174,4 @@ def get_dataset():
 
 
 if __name__ == '__main__':
-    generate_summary('../../models/GlobPerl_c8True_avgTrue_proxFalse_1682154391.pt')
+    generate_summary(os.getenv('MODEL_FILE'))

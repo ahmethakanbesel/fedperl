@@ -1,10 +1,22 @@
 import torchvision
+import os
 from torch import nn
 from efficientnet_pytorch import EfficientNet
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def get_model(num_classes: int):
-    return efficientnet_legacy(num_classes)
+    chosen_model = os.getenv('MODEL')
+    if chosen_model == 'densenet':
+        return densenet(num_classes=num_classes)
+    elif chosen_model == 'efficentnet':
+        return efficientnet(num_classes=num_classes)
+    elif chosen_model == 'efficientnet_legacy':
+        return efficientnet_legacy(num_classes=num_classes)
+    else:
+        return efficientnet(num_classes=num_classes)
 
 
 def efficientnet(num_classes: int):
