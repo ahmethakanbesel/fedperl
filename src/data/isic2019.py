@@ -67,7 +67,7 @@ class ISICDataset(Dataset):
         test = [i for i in range(start_idx, start_idx + 5000)]
 
         start_idx = 25000
-        validation = [i for i in range(start_idx, start_idx + 331)]
+        validation = [i for i in range(start_idx, start_idx + 330)]
 
         return images, labels, test, validation
 
@@ -102,7 +102,7 @@ class ISICDataset(Dataset):
         start_idx = start_idx + 1600
         labeled = [i for i in range(start_idx, start_idx + 401)]
         start_idx = 25000
-        validation = [i for i in range(start_idx, start_idx + 332)]
+        validation = [i for i in range(start_idx, start_idx + 331)]
         return labeled, unlabeled, validation
 
     def __get_client_image_ids_80L_20U(self, client_id):
