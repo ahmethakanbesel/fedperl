@@ -99,11 +99,11 @@ class BrainDataset(Dataset):
         # Pick first 100 as validation
         # validation = [i for i in range(start_idx, start_idx + 101)]
         # start_idx = start_idx + 100
-        unlabeled = [i for i in range(start_idx, start_idx + 1680)]
+        unlabeled = [i for i in range(start_idx, start_idx + 1681)]
         start_idx = start_idx + 1680
-        labeled = [i for i in range(start_idx, start_idx + 420)]
+        labeled = [i for i in range(start_idx, start_idx + 421)]
         start_idx = start_idx + 420
-        validation = [i for i in range(start_idx, start_idx + 100)]
+        validation = [i for i in range(start_idx, start_idx + 101)]
         return labeled, unlabeled, validation
 
     def __get_client_image_ids_80L_20U(self, client_id):

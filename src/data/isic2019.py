@@ -98,11 +98,11 @@ class ISICDataset(Dataset):
         # Pick first 100 as validation
         # validation = [i for i in range(start_idx, start_idx + 101)]
         # start_idx = start_idx + 100
-        unlabeled = [i for i in range(start_idx, start_idx + 1600)]
+        unlabeled = [i for i in range(start_idx, start_idx + 1601)]
         start_idx = start_idx + 1600
-        labeled = [i for i in range(start_idx, start_idx + 400)]
+        labeled = [i for i in range(start_idx, start_idx + 401)]
         start_idx = 25000
-        validation = [i for i in range(start_idx, start_idx + 331)]
+        validation = [i for i in range(start_idx, start_idx + 332)]
         return labeled, unlabeled, validation
 
     def __get_client_image_ids_80L_20U(self, client_id):
