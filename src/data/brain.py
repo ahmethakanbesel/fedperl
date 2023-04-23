@@ -16,6 +16,7 @@ class BrainDataset(Dataset):
         self.clients_path = None
         self.images = np.load(self.image_file)
         self.labels = np.load(self.label_file)
+        self.size = self.images.size
         self.distribution = self.__get_client_image_ids_20L_80U
 
     def get_classes(self):
@@ -96,11 +97,13 @@ class BrainDataset(Dataset):
         # 100 val, 2000 training = 2100
         start_idx = 2100 * client_id
         # Pick first 100 as validation
-        validation = [i for i in range(start_idx, start_idx + 101)]
-        start_idx = start_idx + 100
-        unlabeled = [i for i in range(start_idx, start_idx + 1601)]
-        start_idx = start_idx + 1600
-        labeled = [i for i in range(start_idx, start_idx + 401)]
+        # validation = [i for i in range(start_idx, start_idx + 101)]
+        # start_idx = start_idx + 100
+        unlabeled = [i for i in range(start_idx, start_idx + 1680)]
+        start_idx = start_idx + 1680
+        labeled = [i for i in range(start_idx, start_idx + 420)]
+        start_idx = start_idx + 420
+        validation = [i for i in range(start_idx, start_idx + 100)]
         return labeled, unlabeled, validation
 
     def __get_client_image_ids_80L_20U(self, client_id):
