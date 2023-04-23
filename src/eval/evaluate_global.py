@@ -114,7 +114,6 @@ def generate_summary(model_path):
     models_list = [model_path]
 
     model = models.get_model(DATASET.num_classes)
-    architecture = model.__class__.__name__
     device = torch.device('cuda:0')
     model = nn.DataParallel(model)
     model = model.cuda()
@@ -141,7 +140,7 @@ def generate_summary(model_path):
             y, predictions = predict(model, valid_loader if worksheet[1] == 'validation' else test_loader)
             scores = calculate_scores(y, predictions)
             DB.insert_result(name, scores['accuracy'], scores['f1'], scores['precision'], scores['recall'],
-                             worksheet[1], architecture, json.dumps(scores['class_f1_scores']),
+                             worksheet[1], os.getenv('MODEL'), json.dumps(scores['class_f1_scores']),
                              json.dumps(scores['class_accuracies']))
             cl = 'A' + str(i + shift)
             ws[cl] = name
