@@ -8,7 +8,7 @@ from sklearn.metrics import classification_report
 from torch import nn
 from dotenv import load_dotenv
 
-from src.data.data_FL import MyDataset, val_transform
+from src.data.data_FL import MyDataset
 from src.eval.database import Database
 from src.modules import models
 from src.modules.settings import DATASET
@@ -166,8 +166,8 @@ def get_dataset():
     img_validation = images[validation]
     lbl_validation = labels[validation]
 
-    test_ds = MyDataset(img_test, lbl_test, val_transform)
-    val_ds = MyDataset(img_validation, lbl_validation, val_transform)
+    test_ds = MyDataset(img_test, lbl_test, DATASET.get_validation_transform())
+    val_ds = MyDataset(img_validation, lbl_validation, DATASET.get_validation_transform())
 
     return test_ds, val_ds
 
