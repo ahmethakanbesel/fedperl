@@ -44,10 +44,8 @@ for file in files:
                 label = 6
             elif r['SCC'] == "1.0":
                 label = 7
-            elif r['UNK'] == "1.0":
-                label = 8
             else:
-                label = 'healthy'
+                continue
             labels.append(label)
             images.append(image)
             rows_processed += 1

@@ -9,7 +9,7 @@ class ISICDataset(Dataset):
     def __init__(self, image_file, label_file):
         self.image_file = image_file
         self.label_file = label_file
-        self.classes = ['mel', 'nv', 'bcc', 'ak', 'bkl', 'df', 'vasc', 'scc', 'unk']
+        self.classes = ['mel', 'nv', 'bcc', 'ak', 'bkl', 'df', 'vasc', 'scc']
         self.num_classes = len(self.classes)
         self.class_idx = [i for i in range(self.num_classes)]
         self.label_map = {}
