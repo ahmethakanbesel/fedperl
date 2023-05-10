@@ -1,5 +1,6 @@
 import os
 from src.data.brain import BrainDataset
+from src.data.ham10000 import HAM10000Dataset
 from src.data.isic2019 import ISICDataset
 from dotenv import load_dotenv
 
@@ -15,5 +16,7 @@ if chosen_dataset == 'brain':
     DATASET = BrainDataset(IMG_PATH, LABEL_PATH)
 elif chosen_dataset == 'isic2019':
     DATASET = ISICDataset(IMG_PATH, LABEL_PATH)
+elif chosen_dataset == 'ham10000':
+    DATASET = HAM10000Dataset(IMG_PATH, LABEL_PATH)
 else:
     DATASET = BrainDataset(IMG_PATH, LABEL_PATH)
