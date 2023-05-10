@@ -94,44 +94,36 @@ class ISICDataset(Dataset):
         return images, labels
 
     def __get_client_image_ids_20L_80U(self, client_id):
-        labeled, unlabeled, validation = [], [], []
-        # 100 val, 2000 training = 2100
-        start_idx = 2100 * client_id
-        # Pick first 100 as validation
-        # validation = [i for i in range(start_idx, start_idx + 101)]
-        # start_idx = start_idx + 100
-        unlabeled = [i for i in range(start_idx, start_idx + 1601)]
+        # 2000 training (1600 unlabeled, 400 labeled), 330 validation
+        start_idx = 2000 * client_id
+        unlabeled = [i for i in range(start_idx, start_idx + 1600)]
         start_idx = start_idx + 1600
-        labeled = [i for i in range(start_idx, start_idx + 401)]
+        labeled = [i for i in range(start_idx, start_idx + 400)]
         start_idx = 25000
-        validation = [i for i in range(start_idx, start_idx + 331)]
+        validation = [i for i in range(start_idx, start_idx + 330)]
         return labeled, unlabeled, validation
 
     def __get_client_image_ids_80L_20U(self, client_id):
-        labeled, unlabeled, validation = [], [], []
-        # 100 val, 2000 training = 2100
-        start_idx = 2100 * client_id
-        # Pick first 100 as validation
-        validation = [i for i in range(start_idx, start_idx + 101)]
-        start_idx = start_idx + 100
-        labeled = [i for i in range(start_idx, start_idx + 1601)]
+        # 2000 training (1600 labeled, 400 unlabeled), 330 validation
+        start_idx = 2000 * client_id
+        labeled = [i for i in range(start_idx, start_idx + 1600)]
         start_idx = start_idx + 1600
-        unlabeled = [i for i in range(start_idx, start_idx + 401)]
+        unlabeled = [i for i in range(start_idx, start_idx + 400)]
+        start_idx = 25000
+        validation = [i for i in range(start_idx, start_idx + 330)]
         return labeled, unlabeled, validation
 
     def __get_client_image_ids_2labeled(self, client_id):
-        labeled, unlabeled, validation = [], [], []
-        # 100 val, 2000 training = 2100
-        start_idx = 2100 * client_id
-        # Pick first 100 as validation
-        validation = [i for i in range(start_idx, start_idx + 101)]
-        start_idx = start_idx + 100
-        if client_id < 2:  # 2 labeled clients
-            labeled = [i for i in range(start_idx, start_idx + 2001)]
+        # 2000 training (full labeled or unlabeled), 330 validation
+        start_idx = 2000 * client_id
+        if client_id < 2:  # Clients 0 and 1 have only labeled data
+            labeled = [i for i in range(start_idx, start_idx + 2000)]
             unlabeled = [start_idx]
         else:
             labeled = [start_idx]
-            unlabeled = [i for i in range(start_idx, start_idx + 2001)]
+            unlabeled = [i for i in range(start_idx, start_idx + 2000)]
+        start_idx = 25000
+        validation = [i for i in range(start_idx, start_idx + 330)]
         return labeled, unlabeled, validation
 
     def get_labeled_transform(self):
