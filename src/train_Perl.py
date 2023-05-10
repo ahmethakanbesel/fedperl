@@ -1,5 +1,4 @@
 import argparse
-import numpy as np
 from modules.server import *
 
 SEED = 1
@@ -21,19 +20,12 @@ parser.add_argument('--clients_state', default='./../states/', type=str, metavar
                     help='path to save the clients state temporarly')
 parser.add_argument('--models_folder', default='./../models/', type=str, metavar='PATH',
                     help='path to save the trained models')
-parser.add_argument('--model_name', default='FedPerl', type=str)
-parser.add_argument('--num_rounds', type=int, default=50)
-parser.add_argument('--num_workers', type=int, default=0)
-parser.add_argument('--steps', type=int, default=5, help='number of iteration')
-parser.add_argument('--curr_lr', type=int, default=0.005)
-parser.add_argument('--batch_size', type=int, default=24)
+parser.add_argument('--num_rounds', type=int, default=200)
+parser.add_argument('--num_workers', type=int, default=4)
+parser.add_argument('--steps', type=int, default=100, help='number of iteration')
+parser.add_argument('--curr_lr', type=int, default=0.00005)
+parser.add_argument('--batch_size', type=int, default=16)
 parser.add_argument('--num_classes', type=int, default=5)
-parser.add_argument('--n_classes', type=int, default=5)
-parser.add_argument('--weight_decay', type=int, default=0.002)
-parser.add_argument('--img_channel', type=int, default=1)
-parser.add_argument('--img_width', type=int, default=224)
-parser.add_argument('--img_height', type=int, default=224)
-parser.add_argument('--alpha', type=int, default=1)
 parser.add_argument('--con', type=int, default=0.6, help='confidence threshold')
 parser.add_argument('--lambda_a', type=int, default=0.5, help='unlabeled coefficient')
 parser.add_argument('--lambda_i', type=int, default=0.01, help='consistency coefficient')
