@@ -95,29 +95,23 @@ class BrainDataset(Dataset):
         return images, labels
 
     def __get_client_image_ids_20L_80U(self, client_id):
-        labeled, unlabeled, validation = [], [], []
         # 100 val, 2000 training = 2100
         start_idx = 2100 * client_id
-        # Pick first 100 as validation
-        # validation = [i for i in range(start_idx, start_idx + 101)]
-        # start_idx = start_idx + 100
-        unlabeled = [i for i in range(start_idx, start_idx + 1681)]
+        unlabeled = [i for i in range(start_idx, start_idx + 1680)]
         start_idx = start_idx + 1680
-        labeled = [i for i in range(start_idx, start_idx + 421)]
+        labeled = [i for i in range(start_idx, start_idx + 420)]
         start_idx = start_idx + 420
-        validation = [i for i in range(start_idx, start_idx + 101)]
+        validation = [i for i in range(start_idx, start_idx + 100)]
         return labeled, unlabeled, validation
 
     def __get_client_image_ids_80L_20U(self, client_id):
-        labeled, unlabeled, validation = [], [], []
         # 100 val, 2000 training = 2100
         start_idx = 2100 * client_id
-        # Pick first 100 as validation
-        validation = [i for i in range(start_idx, start_idx + 101)]
-        start_idx = start_idx + 100
-        labeled = [i for i in range(start_idx, start_idx + 1601)]
-        start_idx = start_idx + 1600
-        unlabeled = [i for i in range(start_idx, start_idx + 401)]
+        labeled = [i for i in range(start_idx, start_idx + 1680)]
+        start_idx = start_idx + 1680
+        unlabeled = [i for i in range(start_idx, start_idx + 420)]
+        start_idx = start_idx + 420
+        validation = [i for i in range(start_idx, start_idx + 100)]
         return labeled, unlabeled, validation
 
     def __get_client_image_ids_2labeled(self, client_id):
@@ -125,14 +119,14 @@ class BrainDataset(Dataset):
         # 100 val, 2000 training = 2100
         start_idx = 2100 * client_id
         # Pick first 100 as validation
-        validation = [i for i in range(start_idx, start_idx + 101)]
+        validation = [i for i in range(start_idx, start_idx + 100)]
         start_idx = start_idx + 100
         if client_id < 2:  # 2 labeled clients
-            labeled = [i for i in range(start_idx, start_idx + 2001)]
+            labeled = [i for i in range(start_idx, start_idx + 2000)]
             unlabeled = [start_idx]
         else:
             labeled = [start_idx]
-            unlabeled = [i for i in range(start_idx, start_idx + 2001)]
+            unlabeled = [i for i in range(start_idx, start_idx + 2000)]
         return labeled, unlabeled, validation
 
     def get_labeled_transform(self):
