@@ -94,17 +94,13 @@ class HAM10000Dataset(Dataset):
         return images, labels
 
     def __get_client_image_ids_20L_80U(self, client_id):
-        labeled, unlabeled, validation = [], [], []
-        # 50 val, 800 training = 850
+        # 200 validation, 800 training (640 unlabeled, 160 labeled)
         start_idx = 800 * client_id
-        # Pick first 100 as validation
-        # validation = [i for i in range(start_idx, start_idx + 101)]
-        # start_idx = start_idx + 100
-        unlabeled = [i for i in range(start_idx, start_idx + 641)]
-        start_idx = start_idx + 1600
-        labeled = [i for i in range(start_idx, start_idx + 161)]
+        unlabeled = [i for i in range(start_idx, start_idx + 640)]
+        start_idx = start_idx + 640
+        labeled = [i for i in range(start_idx, start_idx + 160)]
         start_idx = 9800
-        validation = [i for i in range(start_idx, start_idx + 201)]
+        validation = [i for i in range(start_idx, start_idx + 200)]
         return labeled, unlabeled, validation
 
     def get_labeled_transform(self):
