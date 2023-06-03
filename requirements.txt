@@ -6,3 +6,4 @@ scipy
 torch
 torchvision
 python-dotenv
+efficientnet_pytorch
