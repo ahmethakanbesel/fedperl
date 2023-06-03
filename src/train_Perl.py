@@ -20,19 +20,19 @@ parser.add_argument('--clients_state', default='./../states/', type=str, metavar
                     help='path to save the clients state temporarly')
 parser.add_argument('--models_folder', default='./../models/', type=str, metavar='PATH',
                     help='path to save the trained models')
-parser.add_argument('--num_rounds', type=int, default=200)
-parser.add_argument('--num_workers', type=int, default=4)
-parser.add_argument('--steps', type=int, default=100, help='number of iteration')
+parser.add_argument('--num_rounds', type=int, default=5)
+parser.add_argument('--num_workers', type=int, default=0)
+parser.add_argument('--steps', type=int, default=5, help='number of iteration')
 parser.add_argument('--curr_lr', type=int, default=0.00005)
 parser.add_argument('--batch_size', type=int, default=16)
-parser.add_argument('--num_classes', type=int, default=5)
+parser.add_argument('--num_classes', type=int, default=7)
 parser.add_argument('--con', type=int, default=0.6, help='confidence threshold')
 parser.add_argument('--lambda_a', type=int, default=0.5, help='unlabeled coefficient')
 parser.add_argument('--lambda_i', type=int, default=0.01, help='consistency coefficient')
 parser.add_argument('--num_clients', type=int, default=10, help='num of clients')
 parser.add_argument('--connected_clients', type=int, default=10, help='connected clients')
 parser.add_argument('--num_peers', type=int, default=2, help='number of peers used in peer learning')
-parser.add_argument('--method', default='Perl', type=str,
+parser.add_argument('--method', default='Acc', type=str,
                     help='current options Perl, Random, FedMatch, FixMatch')
 parser.add_argument('--is_normalized', default='True', help='normalize the features on the similarity matrix')
 parser.add_argument('--include_acc', default='True',
@@ -43,6 +43,7 @@ parser.add_argument('--calculate_val', default='True',
 parser.add_argument('--is_PA', default='True', help='apply peer anonymization')
 parser.add_argument('--include_C8', default='True', help='include client 8 in the training')
 parser.add_argument('--fed_prox', default='False', help='apply fedprox')
+parser.add_argument('--weighted_peers', default='False', help='give more weighted to peers with higher acc.')
 
 if __name__ == '__main__':
     args = parser.parse_args()

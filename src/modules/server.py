@@ -27,6 +27,7 @@ class Server:
             None
         """
 
+        self.clnts_bst_acc = None
         self.args = args
         self.global_model = models.get_model(self.args.num_classes)
         self.global_model = nn.DataParallel(self.global_model)
@@ -114,6 +115,7 @@ class Server:
         self.is_PA = self.args.is_PA
         self.include_C8 = self.args.include_C8
         self.fed_prox = self.args.fed_prox
+        self.weighted_peers = self.args.weighted_peers
         self.name = f"{self.method}_{os.getenv('MODEL')}_{os.getenv('DATASET')}_rnd{str(self.num_rounds)}_ep{str(self.steps)}_p{str(self.num_peers)}"
 
     def build_models(self):
@@ -202,13 +204,32 @@ class Server:
             # statistical moments)
             if self.method == 'Perl':  # Perl
                 sims = self.similarity_manager.get_similar_clients(client_id, self.num_peers, cd2)
-                for pid in sims:
-                    self.client_peers['client' + str(client_id)].append(pid)
-                    w = self.load_client_weights(pid)
-                    if self.is_PA:
-                        weights.append((pid, 0.5, copy.deepcopy(w)))
-                    else:
-                        weights.append(copy.deepcopy(w))
+                total_acc = 0
+                peers_accs = {}
+                for peer_id in sims:
+                    total_acc += self.clnts_bst_acc[peer_id]
+                    peers_accs[peer_id] = self.clnts_bst_acc[peer_id]
+                if self.weighted_peers and total_acc > 0:
+                    print("NEW PEER METHOD WORKS")
+                    peers_weights = {}
+
+                    for peer_id in sims:
+                        peers_weights[peer_id] = peers_accs[peer_id] / total_acc
+
+                    for peer_id in sims:
+                        self.client_peers['client' + str(client_id)].append(peer_id)
+                        w = self.load_client_weights(peer_id)
+                        weights.append((peer_id, peers_weights[peer_id], copy.deepcopy(w)))
+
+                else:
+                    for pid in sims:
+                        self.client_peers['client' + str(client_id)].append(pid)
+                        w = self.load_client_weights(pid)
+
+                        if self.is_PA:
+                            weights.append((pid, 0.5, copy.deepcopy(w)))
+                        else:
+                            weights.append(copy.deepcopy(w))
             # Get peers based on the FedMatch similarities (KDTree on models predictions)
             elif self.method == 'FedMatch':  # FedMatch
                 cout = self.client_pred[client_id]
@@ -644,6 +665,8 @@ class Server:
                 # FedMatch
                 elif 'FedMatch' in self.method:
                     self.build_client_similarity(clnts_updates)
+
+            self.clnts_bst_acc = clnts_bst_acc_ind
 
         model_wts = copy.deepcopy(self.global_model.state_dict())
         torch.save(model_wts, os.path.join(self.models_folder, 'lst_Glob{}.pt'.format(self.name)))
