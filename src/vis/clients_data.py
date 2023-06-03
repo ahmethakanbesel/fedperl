@@ -3,7 +3,7 @@ import numpy as np
 from src.modules.settings import DATASET
 
 # Define the number of clients and their respective data counts
-clients = ['client0', 'client1', 'client2', 'client3', 'client4', 'client5', 'client6', 'client7', 'client8', 'client9']
+clients = ['C0', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9']
 labeled_counts = []
 unlabeled_counts = []
 validation_counts = []
