@@ -28,7 +28,7 @@ class Server:
         """
 
         self.args = args
-        self.global_model = models.get_model(self.args.n_classes)
+        self.global_model = models.get_model(self.args.num_classes)
         self.global_model = nn.DataParallel(self.global_model)
         self.global_model = self.global_model.cuda()
         self.global_model = self.global_model.to(device)
