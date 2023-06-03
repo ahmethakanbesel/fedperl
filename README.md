@@ -35,26 +35,26 @@ If you created a new dataset you need to update the if block in `src/modules/set
 
 `.env.example` files should be copied as `.env`. There are 5 fields in the `.env` file.
 
-| Field Name | Value                                                                                                                         |
-|------------|-------------------------------------------------------------------------------------------------------------------------------|
-| IMG_PATH   | Stores the full path of .npy file for the images                                                                              |
-| LBL_PATH   | Stores the full path of .npy file for the labels                                                                              |
-| MODEL      | Defines which architecture will be used (efficientnet, efficientnet_legacy, densenet)                                         |
-| MODEL_FILE | Stores the full path of your model file after finishing the training process. This is used while evaluating the global model. |
-| DATASET    | Defines which dataset will be used (brain, ham10000, isic2019)                                                                |
+| Field Name | Value                                                                                                                             |
+|------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| IMG_PATH   | Stores the absolute path of .npy file for the images                                                                              |
+| LBL_PATH   | Stores the absolute path of .npy file for the labels                                                                              |
+| MODEL      | Defines which architecture will be used (efficientnet, efficientnet_legacy, densenet)                                             |
+| MODEL_FILE | Stores the absolute path of your model file after finishing the training process. This is used while evaluating the global model. |
+| DATASET    | Defines which dataset will be used (brain, ham10000, isic2019)                                                                    |
 
 ## Running FedPerl
 
 You can run `src/train_Perl.py` by using command line, or you can set hyperparameters inside that file and run it as a
 Python file without using command line.
-Before running the file be sure that folders for storing states, weights and models are created.
+Before running the file be sure that folders for storing states, weights, checkpoints and models are created.
 
 ## Model Evaluation
 
 ### Evaluate Global Model
 
 You can run `src/eval/evaluate_global.py` to evaluate the model defined in `.env` file.
-It stores the results in a SQLite database `src/eval/results.db`.
+It stores the results in a SQLite database `src/eval/results.db` and an Excel sheet `src/eval/All_Scores_Global.xlsx`.
 
 ### Evaluate Clients' Models
 
